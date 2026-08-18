@@ -35,14 +35,14 @@ def test_research_priorities_reflect_passed_diversity_gates():
     assert report["gaps"]["resolved_operations"] > 0
 
 
-def test_project_dossier_preserves_revisions_and_missing_evidence():
+def test_project_dossier_preserves_revisions_and_deep_physical_evidence():
     events = load_event_ledger(LEDGER)
     dossier = project_dossier(events, "start-campus-sines")
     assert dossier["project"]["country"] == "Portugal"
-    assert dossier["evidence_summary"]["observations"] >= 6
+    assert dossier["evidence_summary"]["observations"] >= 16
     sin02 = next(x for x in dossier["milestones"] if x["milestone_id"] == "sin02-ready-for-service")
     assert len(sin02["target_revisions"]) >= 1
-    assert "power" in dossier["evidence_summary"]["missing_physical_milestone_types"]
+    assert dossier["evidence_summary"]["missing_physical_milestone_types"] == []
     assert "credit opinion" in dossier["guardrail"]
 
 
