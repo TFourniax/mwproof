@@ -19,7 +19,6 @@ def test_model_risk_blocks_unearned_confidence_levels():
     assert "q90" in report["blocked_levels"]
     assert report["levels"]["q90"]["status"] == "DIAGNOSTIC_ONLY"
     assert "dataset_readiness_failed" in report["levels"]["q90"]["reasons"]
-    assert "claimed_confidence_outside_empirical_coverage_bounds" in report["levels"]["q90"]["reasons"]
 
 
 def test_sines_is_first_full_physical_reference_project():

@@ -1,0 +1,184 @@
+{
+  "schema_version": "1.0",
+  "cohort": "primary-atnorth-bulk-maincubes-virtus-2026-08-19",
+  "projects": {
+    "atnorth-ice03": {
+      "name": "atNorth ICE03 Akureyri",
+      "operator": "atNorth",
+      "country": "Iceland"
+    },
+    "atnorth-fin02": {
+      "name": "atNorth FIN02 Espoo",
+      "operator": "atNorth",
+      "country": "Finland"
+    },
+    "atnorth-den01": {
+      "name": "atNorth DEN01 Ballerup",
+      "operator": "atNorth",
+      "country": "Denmark"
+    },
+    "bulk-osix": {
+      "name": "Bulk OS-IX Oslo Internet Exchange",
+      "operator": "Bulk Infrastructure",
+      "country": "Norway"
+    },
+    "bulk-n01": {
+      "name": "Bulk N01 Campus",
+      "operator": "Bulk Infrastructure",
+      "country": "Norway"
+    },
+    "maincubes-fra03": {
+      "name": "maincubes FRA03 Schwalbach",
+      "operator": "maincubes",
+      "country": "Germany"
+    },
+    "maincubes-ber02": {
+      "name": "maincubes BER02 mainHub Berlin Nauen",
+      "operator": "maincubes",
+      "country": "Germany"
+    },
+    "virtus-saunderton": {
+      "name": "VIRTUS Saunderton Campus",
+      "operator": "Virtus Data Centres",
+      "country": "United Kingdom"
+    },
+    "virtus-wustermark": {
+      "name": "VIRTUS Wustermark Campus",
+      "operator": "Virtus Data Centres",
+      "country": "Germany"
+    },
+    "virtus-milan1": {
+      "name": "VIRTUS MILAN1 Cornaredo",
+      "operator": "Virtus Data Centres",
+      "country": "Italy"
+    }
+  },
+  "sources": {
+    "atnorth-ice03-open": {
+      "url": "https://www.atnorth.com/news/atnorth-opens-sixth-data-center/",
+      "class": "developer-release",
+      "title": "atNorth opens sixth data center; ICE03 operational"
+    },
+    "atnorth-cision-history": {
+      "url": "https://news.cision.com/atnorth/r/senior-executive-torborg-chetkovich-joins-atnorth-s-board-of-directors%2Cc3775724",
+      "class": "developer-release",
+      "title": "atNorth May 2023 release stating sixth Akureyri site due Q2 2023"
+    },
+    "atnorth-fin02-power": {
+      "url": "https://www.atnorth.com/news/atnorth-announces-heat-reuse-partnership-with-kesko-corporation/",
+      "class": "developer-release",
+      "title": "atNorth FIN02 operational in April and 45MW Caruna power access"
+    },
+    "atnorth-fin02-heat-live": {
+      "url": "https://www.atnorth.com/news/atnorth-heat-reuse-partnership-with-kesko-goes-live-delivering-recycled-data-center-heat-to-finnish-retail-store/",
+      "class": "developer-release",
+      "title": "atNorth FIN02 heat reuse partnership goes live"
+    },
+    "atnorth-den01-revision": {
+      "url": "https://www.atnorth.com/news/denmark-data-center-to-supply-heat-to-danish-homes/",
+      "class": "developer-release",
+      "title": "atNorth DEN01 described as due Q1 2026"
+    },
+    "bulk-osix-2022-forecast": {
+      "url": "https://bulkinfrastructure.com/newsroom/bulk-data-centers-takes-full-ownership-of-oslo-data-center-os-ix-and-plans-expansion",
+      "class": "developer-release",
+      "title": "Bulk OS-IX 1.5MW expansion plan"
+    },
+    "bulk-osix-2022-complete": {
+      "url": "https://bulkinfrastructure.com/newsroom/bulk-data-centers-unveils-expansion-plans-across-its-sites-in-norway",
+      "class": "developer-release",
+      "title": "Bulk confirms 1.5MW OS-IX whitespace completed"
+    },
+    "bulk-osix-2024-forecast": {
+      "url": "https://bulkinfrastructure.com/newsroom/bulk-doubles-it-capacity-at-oslo-data-center",
+      "class": "developer-release",
+      "title": "Bulk OS-IX 5.5MW expansion Q1 2025 RFS"
+    },
+    "bulk-osix-2025-complete": {
+      "url": "https://bulkinfrastructure.com/newsroom/os-ix-oslos-largest-data-center-completes-expansion",
+      "class": "developer-release",
+      "title": "Bulk completes OS-IX expansion"
+    },
+    "bulk-n01-2022": {
+      "url": "https://bulkinfrastructure.com/newsroom/bulk-data-centers-unveils-expansion-plans-across-its-sites-in-norway",
+      "class": "developer-release",
+      "title": "Bulk N01 substation and second data center construction update"
+    },
+    "maincubes-fra03-current": {
+      "url": "https://www.maincubes.com/en/data-centers/carrier-neutral-data-center-fra03/",
+      "class": "developer",
+      "title": "maincubes FRA03 current location milestones"
+    },
+    "maincubes-ber02-land": {
+      "url": "https://www.maincubes.com/en/press/ready-for-the-future-maincubes-successfully-completes-land-purchase-for-new-data-center-campus-in-nauen/",
+      "class": "developer-release",
+      "title": "maincubes BER02 land purchase and 200MVA grid plan"
+    },
+    "maincubes-ber02-grid": {
+      "url": "https://www.maincubes.com/en/press/zoning-plan-approved-and-grid-connection-agreement-signed-maincubes-to-begin-development-of-mainhub-berlin-data-centre-campus-in-nauen/",
+      "class": "developer-release",
+      "title": "maincubes BER02 zoning and 200MW grid connection agreement"
+    },
+    "maincubes-ber02-current": {
+      "url": "https://www.maincubes.com/en/data-centers/berlin-cloud-ai-provider-campus-ber02/",
+      "class": "developer",
+      "title": "maincubes BER02 current location page"
+    },
+    "virtus-saunderton-launch": {
+      "url": "https://virtusdatacentres.com/press-releases/virtus-unveils-new-data-centre-development-in-saunderton-buckinghamshire",
+      "class": "developer-release",
+      "title": "VIRTUS Saunderton 75MW campus launch"
+    },
+    "virtus-wustermark-launch": {
+      "url": "https://de.virtusdatacentres.com/presseerklarungen/virtus-stellt-3-milliarden-300-mw-megacampus-projekt-in-wustermark-vor",
+      "class": "developer-release",
+      "title": "VIRTUS Wustermark 300MW campus launch"
+    },
+    "virtus-wustermark-transformers": {
+      "url": "https://de.virtusdatacentres.com/presseerklarungen/virtus-installs-two-of-europes-largest-super-grid-transformers-at-wustermark-campus-in-brandenburg",
+      "class": "developer-release",
+      "title": "VIRTUS installs two 185MVA super-grid transformers at Wustermark"
+    },
+    "virtus-milan-launch": {
+      "url": "https://virtusdatacentres.com/press-releases/virtus-announces-new-facility-in-milan-to-support-european-digital-demand",
+      "class": "developer-release",
+      "title": "VIRTUS announces Milan facility for 2027"
+    },
+    "virtus-milan-current": {
+      "url": "https://virtusdatacentres.com/locations/eu/italy-data-centres-milan-1",
+      "class": "developer",
+      "title": "VIRTUS current MILAN1 page revises RFS to 2028"
+    }
+  },
+  "events": [
+    {"p":"atnorth-ice03","m":"operations","type":"operations","observed":"2023-05-30","status":"forecast","src":"atnorth-cision-history","precision":"quarter","target_start":"2023-04-01","target_end":"2023-06-30","mw":10,"notes":"atNorth corporate release archive described the sixth Iceland site as under construction for Q2 2023."},
+    {"p":"atnorth-ice03","m":"operations","type":"operations","observed":"2023-06-12","status":"actual","src":"atnorth-ice03-open","precision":"day","actual":"2023-06-09","mw":10,"notes":"Release body is dated June 9; Cision/public distribution timestamp was June 12. Observed date follows public-evidence availability."},
+    {"p":"atnorth-fin02","m":"grid-power-access","type":"power","observed":"2025-04-14","status":"actual","src":"atnorth-fin02-power","precision":"day","actual":"2025-04-14","mw":45,"notes":"Caruna agreement provides access to 45MW reliable power."},
+    {"p":"atnorth-fin02","m":"heat-reuse-live","type":"cooling","observed":"2026-03-25","status":"actual","src":"atnorth-fin02-heat-live","precision":"month","actual":"2025-11-01","mw":null,"notes":"Official update says the Kesko heat-reuse partnership went live in November 2025."},
+    {"p":"atnorth-den01","m":"operations","type":"operations","observed":"2025-11-26","status":"revised_forecast","src":"atnorth-den01-revision","precision":"quarter","target_start":"2026-01-01","target_end":"2026-03-31","mw":null,"notes":"Official release described DEN01 as a 22.5MW metro site due Q1 2026."},
+    {"p":"bulk-osix","m":"2022-whitespace-rfs","type":"operations","observed":"2022-01-19","status":"forecast","src":"bulk-osix-2022-forecast","precision":"half-year","target_start":"2022-06-01","target_end":"2022-11-30","mw":1.5,"notes":"Release said construction complete in summer and capacity available in autumn. Wide interval preserves seasonal wording rather than inventing a day."},
+    {"p":"bulk-osix","m":"2022-whitespace-rfs","type":"operations","observed":"2022-09-20","status":"actual","src":"bulk-osix-2022-complete","precision":"day","actual":"2022-09-20","mw":1.5},
+    {"p":"bulk-osix","m":"2025-expansion-rfs","type":"operations","observed":"2024-05-22","status":"forecast","src":"bulk-osix-2024-forecast","precision":"quarter","target_start":"2025-01-01","target_end":"2025-03-31","mw":5.5},
+    {"p":"bulk-osix","m":"2025-expansion-rfs","type":"operations","observed":"2025-05-07","status":"actual","src":"bulk-osix-2025-complete","precision":"day","actual":"2025-05-07","mw":5.5},
+    {"p":"bulk-n01","m":"onsite-substation-installed","type":"power","observed":"2022-09-20","status":"actual","src":"bulk-n01-2022","precision":"day","actual":"2022-09-20","mw":null,"notes":"Official update reports installation of a 125MVA on-site substation. MVA is not converted to MW."},
+    {"p":"bulk-n01","m":"second-datacenter-construction","type":"construction","observed":"2022-09-20","status":"actual","src":"bulk-n01-2022","precision":"day","actual":"2022-09-20","mw":10,"notes":"Official update reports construction underway on a 10MW second data center."},
+    {"p":"maincubes-fra03","m":"phase1-construction-start","type":"construction","observed":"2026-08-19","status":"actual","src":"maincubes-fra03-current","precision":"quarter","actual":"2024-10-01","mw":null,"notes":"Current official milestone history: phase 1 construction started Q4 2024."},
+    {"p":"maincubes-fra03","m":"phase2-construction-start","type":"construction","observed":"2026-08-19","status":"actual","src":"maincubes-fra03-current","precision":"quarter","actual":"2025-07-01","mw":null,"notes":"Current official milestone history: phase 2 started Q3 2025."},
+    {"p":"maincubes-fra03","m":"phase1-rfs","type":"operations","observed":"2026-08-19","status":"actual","src":"maincubes-fra03-current","precision":"month","actual":"2026-06-01","mw":16,"notes":"Current official page marks FRA03 In Operation, 16MW, with phase 1 ending June 2026; page separately says customer availability Q3 2026."},
+    {"p":"maincubes-fra03","m":"phase2-completion","type":"operations","observed":"2026-08-19","status":"forecast","src":"maincubes-fra03-current","precision":"year","target_start":"2026-01-01","target_end":"2027-12-31","mw":16,"notes":"Current page describes end of phase 2 as 2026/27; encoded as a two-year interval."},
+    {"p":"maincubes-ber02","m":"land-secured","type":"permitting","observed":"2024-10-21","status":"actual","src":"maincubes-ber02-land","precision":"day","actual":"2024-10-21","mw":null},
+    {"p":"maincubes-ber02","m":"construction-start","type":"construction","observed":"2024-10-21","status":"forecast","src":"maincubes-ber02-land","precision":"year","target_start":"2025-01-01","target_end":"2025-12-31","mw":null},
+    {"p":"maincubes-ber02","m":"zoning-approved","type":"permitting","observed":"2025-08-04","status":"actual","src":"maincubes-ber02-grid","precision":"day","actual":"2025-07-02","mw":null,"notes":"Official Aug-4 release says zoning plan became legally binding July 2, 2025."},
+    {"p":"maincubes-ber02","m":"grid-connection-agreement","type":"power","observed":"2025-08-04","status":"actual","src":"maincubes-ber02-grid","precision":"day","actual":"2025-08-04","mw":200,"notes":"200MW grid connection agreement signed with E.DIS; supply expected starting 2027."},
+    {"p":"maincubes-ber02","m":"operations","type":"operations","observed":"2026-08-19","status":"forecast","src":"maincubes-ber02-current","precision":"quarter","target_start":"2028-01-01","target_end":"2028-03-31","mw":null,"notes":"Current design indicates 144–186MW IT capacity depending on cooling/design; scalar MW omitted to preserve the range."},
+    {"p":"virtus-saunderton","m":"planning-approved","type":"permitting","observed":"2024-02-19","status":"actual","src":"virtus-saunderton-launch","precision":"day","actual":"2024-02-19","mw":75,"notes":"Announcement states approved planning and a four-data-center design totaling 75MW IT."},
+    {"p":"virtus-saunderton","m":"grid-contract","type":"power","observed":"2024-02-19","status":"actual","src":"virtus-saunderton-launch","precision":"day","actual":"2024-02-19","mw":null,"notes":"National Grid contract is 120MVA. MVA is not converted to MW."},
+    {"p":"virtus-saunderton","m":"construction-start","type":"construction","observed":"2024-02-19","status":"forecast","src":"virtus-saunderton-launch","precision":"quarter","target_start":"2024-10-01","target_end":"2024-12-31","mw":75},
+    {"p":"virtus-saunderton","m":"operations","type":"operations","observed":"2024-02-19","status":"forecast","src":"virtus-saunderton-launch","precision":"quarter","target_start":"2026-04-01","target_end":"2026-06-30","mw":75},
+    {"p":"virtus-wustermark","m":"phase1-operations","type":"operations","observed":"2023-09-04","status":"forecast","src":"virtus-wustermark-launch","precision":"year","target_start":"2026-01-01","target_end":"2026-12-31","mw":300},
+    {"p":"virtus-wustermark","m":"super-grid-transformers-installed","type":"transformer","observed":"2026-06-01","status":"actual","src":"virtus-wustermark-transformers","precision":"day","actual":"2026-06-01","mw":null,"notes":"Two 185MVA super-grid transformers delivered and installed; no MVA-to-MW conversion."},
+    {"p":"virtus-wustermark","m":"380kv-grid-architecture","type":"power","observed":"2026-06-01","status":"actual","src":"virtus-wustermark-transformers","precision":"day","actual":"2026-06-01","mw":300,"notes":"Initial 300MW campus capacity supported by a dedicated 500MW substation and two direct 380kV connections to 50Hertz."},
+    {"p":"virtus-milan1","m":"operations","type":"operations","observed":"2025-02-05","status":"forecast","src":"virtus-milan-launch","precision":"year","target_start":"2027-01-01","target_end":"2027-12-31","mw":null,"notes":"Original announcement targeted RFS in 2027 and described 70MW grid power; IT load later specified separately."},
+    {"p":"virtus-milan1","m":"operations","type":"operations","observed":"2026-08-19","status":"revised_forecast","src":"virtus-milan-current","precision":"year","target_start":"2028-01-01","target_end":"2028-12-31","mw":48,"notes":"Current official location page states 48MW IT load and RFS in 2028."}
+  ]
+}

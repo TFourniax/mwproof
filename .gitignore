@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .venv/
 .env
+build/
+dist/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
