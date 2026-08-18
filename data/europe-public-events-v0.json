@@ -1,0 +1,54 @@
+[
+  {
+    "project_id": "start-campus-sines",
+    "milestone_id": "sin01-operations",
+    "observed_on": "2024-08-08",
+    "status": "forecast",
+    "target_start": "2024-10-01",
+    "target_end": "2024-12-31",
+    "actual_date": null,
+    "capacity_mw": 14,
+    "source_url": "https://www.startcampus.pt/press_release_august_2024_1gw",
+    "source_class": "developer",
+    "notes": "Developer stated SIN01 was set to be operational by Q4 2024; capacity expansion to 26MW was also announced."
+  },
+  {
+    "project_id": "start-campus-sines",
+    "milestone_id": "sin01-operations",
+    "observed_on": "2025-04-04",
+    "status": "actual",
+    "target_start": null,
+    "target_end": null,
+    "actual_date": "2024-12-31",
+    "capacity_mw": 26,
+    "source_url": "https://www.startcampus.pt/start-campus-inaugurates-sin01-data-center",
+    "source_class": "developer",
+    "notes": "Public release confirms start of operations in Q4 2024. Actual date is conservatively encoded as quarter-end because only quarter precision is public."
+  },
+  {
+    "project_id": "start-campus-sines",
+    "milestone_id": "sin02-ready-for-service",
+    "observed_on": "2024-08-22",
+    "status": "forecast",
+    "target_start": "2026-01-01",
+    "target_end": "2026-12-31",
+    "actual_date": null,
+    "capacity_mw": 240,
+    "source_url": "https://www.startcampus.pt/press_release_august_2024_siemens",
+    "source_class": "developer-oem-announcement",
+    "notes": "Transformer order was described as underpinning a 2026 ready-for-service timetable."
+  },
+  {
+    "project_id": "start-campus-sines",
+    "milestone_id": "sin02-ready-for-service",
+    "observed_on": "2026-08-18",
+    "status": "revised_forecast",
+    "target_start": "2027-07-01",
+    "target_end": "2027-12-31",
+    "actual_date": null,
+    "capacity_mw": 200,
+    "source_url": "https://blog.startcampus.pt/building-europes-ai-future-from-the-atlantic-coast",
+    "source_class": "developer",
+    "notes": "Current public developer page states SIN02 200MW coming online by H2 2027. This is a target revision observation, not evidence of failure or default."
+  }
+]
