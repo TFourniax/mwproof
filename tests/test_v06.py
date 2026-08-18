@@ -15,6 +15,7 @@ from proofmw.dossier import project_dossier
 from proofmw.event_ledger import MilestoneObservation, actual_window, ledger_fingerprint, load_event_ledger, target_revision_days
 from proofmw.physical_depth import physical_depth_report
 from proofmw.readiness import calibration_readiness
+from proofmw.research_priority import research_priorities
 
 LEDGER = ROOT / "data" / "europe-public-events-v2"
 
@@ -97,6 +98,18 @@ def test_interval_control_labels_are_conservative_and_exhaustive():
     labels = readiness["control_labels"]
     assert labels["certainly_early_or_on_time"] + labels["certainly_materially_delayed"] + labels["interval_ambiguous"] == readiness["gates"]["resolved_operations"]["actual"]
     assert labels["interval_ambiguous"] >= 0
+
+
+def test_research_priorities_reuse_readiness_control_labels():
+    events = load_event_ledger(LEDGER)
+    readiness = calibration_readiness(events)
+    priorities = research_priorities(events)
+    labels = readiness["control_labels"]
+    assert priorities["current"]["certainly_early_or_on_time_controls"] == labels["certainly_early_or_on_time"]
+    assert priorities["current"]["certainly_materially_delayed_controls"] == labels["certainly_materially_delayed"]
+    assert priorities["current"]["interval_ambiguous_controls"] == labels["interval_ambiguous"]
+    assert priorities["gaps"]["early_or_on_time_controls"] == max(0, 25 - labels["certainly_early_or_on_time"])
+    assert priorities["gaps"]["materially_delayed_controls"] == max(0, 25 - labels["certainly_materially_delayed"])
 
 
 def test_followups_add_real_physical_depth_and_schedule_revisions():
