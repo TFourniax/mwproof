@@ -3,10 +3,9 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any, Iterable
 
-from .event_ledger import MilestoneObservation
+from .event_ledger import AUTHORITATIVE_SOURCE_CLASSES, MilestoneObservation
 
 PHYSICAL_TYPES = ("power", "permitting", "transformer", "construction", "cooling", "network")
-_AUTHORITATIVE = {"government", "regulator", "grid-operator", "company-filing", "developer-oem-announcement", "developer-release", "developer", "oem"}
 
 
 def physical_depth_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]:
@@ -22,7 +21,7 @@ def physical_depth_report(items: Iterable[MilestoneObservation]) -> dict[str, An
         authoritative_types = {
             row.milestone_type
             for row in project_rows
-            if row.milestone_type in PHYSICAL_TYPES and row.source_class in _AUTHORITATIVE
+            if row.milestone_type in PHYSICAL_TYPES and row.source_class in AUTHORITATIVE_SOURCE_CLASSES
         }
         projects.append({
             "project_id": project_id,
