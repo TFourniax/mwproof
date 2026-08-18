@@ -15,6 +15,7 @@ SOURCE_WEIGHTS: dict[str, float] = {
     "company-filing": 0.98,
     "developer-oem-announcement": 0.95,
     "developer-release": 0.95,
+    "customer-release": 0.95,
     "developer": 0.90,
     "oem": 0.90,
     "specialist-monitor": 0.80,
@@ -22,6 +23,18 @@ SOURCE_WEIGHTS: dict[str, float] = {
     "trade-press": 0.70,
     "other": 0.50,
 }
+
+AUTHORITATIVE_SOURCE_CLASSES = frozenset({
+    "government",
+    "regulator",
+    "grid-operator",
+    "company-filing",
+    "developer-oem-announcement",
+    "developer-release",
+    "customer-release",
+    "developer",
+    "oem",
+})
 
 TERMINAL_NEGATIVE = {"canceled", "denied", "withdrawn"}
 FORECAST_STATUSES = {"forecast", "revised_forecast", "conflicting_forecast", "delayed"}
@@ -39,6 +52,8 @@ class MilestoneObservation:
     capacity_mw: float | None
     source_url: str
     source_class: str
+    actual_start: str | None = None
+    actual_end: str | None = None
     notes: str = ""
     project_name: str | None = None
     operator: str | None = None
@@ -49,11 +64,24 @@ class MilestoneObservation:
 
     def validate(self) -> None:
         date.fromisoformat(self.observed_on)
-        for value in (self.target_start, self.target_end, self.actual_date):
+        for value in (
+            self.target_start,
+            self.target_end,
+            self.actual_date,
+            self.actual_start,
+            self.actual_end,
+        ):
             if value:
                 date.fromisoformat(value)
         if self.target_start and self.target_end and self.target_start > self.target_end:
             raise ValueError("target_start must be <= target_end")
+        if bool(self.actual_start) != bool(self.actual_end):
+            raise ValueError("actual_start and actual_end must be provided together")
+        if self.actual_start and self.actual_end and self.actual_start > self.actual_end:
+            raise ValueError("actual_start must be <= actual_end")
+        if self.actual_date and self.actual_start and self.actual_end:
+            if not self.actual_start <= self.actual_date <= self.actual_end:
+                raise ValueError("actual_date must lie inside explicit actual bounds")
         if self.capacity_mw is not None and self.capacity_mw < 0:
             raise ValueError("capacity_mw must be non-negative")
         if not self.source_url.startswith("https://"):
@@ -65,7 +93,14 @@ class MilestoneObservation:
 
     @property
     def event_id(self) -> str:
-        payload = json.dumps(asdict(self), sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+        # Preserve every pre-V0.6 event id: new bounded-actual fields are omitted
+        # from identity when absent, exactly as if the old schema were still used.
+        identity = asdict(self)
+        if identity.get("actual_start") is None:
+            identity.pop("actual_start", None)
+        if identity.get("actual_end") is None:
+            identity.pop("actual_end", None)
+        payload = json.dumps(identity, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:20]
 
 
@@ -90,6 +125,8 @@ def _expand_manifest(raw: dict[str, Any]) -> list[dict[str, Any]]:
             "target_start": event.get("target_start"),
             "target_end": event.get("target_end"),
             "actual_date": event.get("actual"),
+            "actual_start": event.get("actual_start"),
+            "actual_end": event.get("actual_end"),
             "capacity_mw": event.get("mw"),
             "source_url": source["url"],
             "source_class": source["class"],
@@ -162,7 +199,6 @@ def target_revision_days(items: list[MilestoneObservation], project_id: str, mil
         if previous is None:
             previous = current
             continue
-        # Same-day multi-source claims are conflicts, not chronological revisions.
         if current.observed_on == previous.observed_on:
             continue
         old = _midpoint(previous.target_start, previous.target_end)
@@ -216,6 +252,13 @@ def _precision_window(anchor: str, precision: str) -> tuple[date, date]:
 
 
 def actual_window(item: MilestoneObservation) -> tuple[date, date] | None:
+    """Return the best known physical outcome interval.
+
+    Explicit bounds take precedence over calendar precision. This supports
+    evidence such as "operational by 31 Oct" without inventing an exact COD.
+    """
+    if item.actual_start and item.actual_end:
+        return date.fromisoformat(item.actual_start), date.fromisoformat(item.actual_end)
     if not item.actual_date:
         return None
     return _precision_window(item.actual_date, item.precision)
@@ -226,7 +269,7 @@ def actual_slippage_interval_days(items: list[MilestoneObservation], project_id:
     if not rows:
         return None
     forecast = next((x for x in rows if (x.target_start or x.target_end) and x.status in FORECAST_STATUSES), None)
-    actual = next((x for x in reversed(rows) if x.status == "actual" and x.actual_date), None)
+    actual = next((x for x in reversed(rows) if x.status == "actual" and actual_window(x) is not None), None)
     if forecast is None or actual is None:
         return None
     target_start = date.fromisoformat(forecast.target_start or forecast.target_end)  # type: ignore[arg-type]
@@ -333,7 +376,7 @@ def resolved_forecast_pairs(items: Iterable[MilestoneObservation]) -> list[dict[
     for (project_id, milestone_id), rows in grouped.items():
         ordered = sorted(rows, key=lambda x: x.observed_on)
         forecast = next((x for x in ordered if (x.target_start or x.target_end) and x.status in FORECAST_STATUSES), None)
-        actual = next((x for x in reversed(ordered) if x.status == "actual" and x.actual_date), None)
+        actual = next((x for x in reversed(ordered) if x.status == "actual" and actual_window(x) is not None), None)
         if not forecast or not actual:
             continue
         target = _midpoint(forecast.target_start, forecast.target_end)
@@ -355,7 +398,7 @@ def resolved_forecast_pairs(items: Iterable[MilestoneObservation]) -> list[dict[
             "milestone_type": forecast.milestone_type or actual.milestone_type,
             "forecast_observed_on": forecast.observed_on,
             "forecast_target_midpoint": target.isoformat(),
-            "actual_date": actual.actual_date,
+            "actual_date": actual.actual_date or actual_end.isoformat(),
             "actual_window_start": actual_start.isoformat(),
             "actual_window_end": actual_end.isoformat(),
             "slippage_days": (actual_mid - target).days,
