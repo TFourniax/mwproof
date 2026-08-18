@@ -40,9 +40,9 @@ def dataset_snapshot(items: Iterable[MilestoneObservation], *, as_of: str | None
     today = date.fromisoformat(cutoff)
     for (project_id, milestone_id), group in sorted(grouped.items()):
         forecasts = [x for x in group if x.status in FORECAST_STATUSES and (x.target_start or x.target_end)]
-        has_actual = any(x.status == "actual" and actual_window(x) is not None for x in group)
+        has_confirmed_actual = any(x.status == "actual" for x in group)
         has_negative = any(x.status in {"canceled", "denied", "withdrawn"} for x in group)
-        if not forecasts or has_actual or has_negative:
+        if not forecasts or has_confirmed_actual or has_negative:
             continue
         latest = max(forecasts, key=lambda x: (x.observed_on, x.source_weight))
         target_end = latest.target_end or latest.target_start
@@ -55,6 +55,7 @@ def dataset_snapshot(items: Iterable[MilestoneObservation], *, as_of: str | None
     certain_on_time = sum(1 for p in resolved_ops if p["slippage_high_days"] <= 90)
     certain_delayed = sum(1 for p in resolved_ops if p["slippage_low_days"] > 90)
     ambiguous = len(resolved_ops) - certain_on_time - certain_delayed
+    unscored_actual = sum(1 for x in rows if x.status == "actual" and actual_window(x) is None)
 
     return {
         "snapshot_version": "ProofMW Coverage Snapshot v1.1",
@@ -66,7 +67,7 @@ def dataset_snapshot(items: Iterable[MilestoneObservation], *, as_of: str | None
         "provenance": {**quality["provenance"], "authoritative_observations": sum(1 for x in rows if x.source_class in AUTHORITATIVE_SOURCE_CLASSES)},
         "temporal_precision": quality["temporal_precision"],
         "concentration": quality["concentration"],
-        "labels": {"resolved_operations": len(resolved_ops), "certainly_early_or_on_time_operations": certain_on_time, "certainly_materially_delayed_operations": certain_delayed, "interval_ambiguous_operations": ambiguous, "terminal_negative_events": sum(1 for x in rows if x.status in {"canceled", "denied", "withdrawn"}), "classification_rule": "Control labels require the whole slippage interval to fall on one side of the 90-day threshold."},
+        "labels": {"resolved_operations": len(resolved_ops), "certainly_early_or_on_time_operations": certain_on_time, "certainly_materially_delayed_operations": certain_delayed, "interval_ambiguous_operations": ambiguous, "confirmed_actual_without_scorable_time": unscored_actual, "terminal_negative_events": sum(1 for x in rows if x.status in {"canceled", "denied", "withdrawn"}), "classification_rule": "Control labels require the whole slippage interval to fall on one side of the 90-day threshold; current-state confirmations without a defensible date are not scored."},
         "open_forecasts": {"unresolved": len(unresolved), "overdue": len(overdue), "stale_over_365d": len(stale), "top_overdue": sorted(overdue, key=lambda x: x["overdue_days"] or 0, reverse=True)[:25]},
         "physical_depth": {"projects_with_any_physical_evidence": physical["projects_with_any_physical_evidence"], "projects_with_at_least_three_physical_types": physical["projects_with_at_least_three_physical_types"], "fully_mapped_projects": physical["fully_mapped_projects"], "fully_mapped_project_ids": physical["fully_mapped_project_ids"]},
         "readiness": {"status": readiness["status"], "failed_gates": readiness["failed_gates"], "gates": readiness["gates"], "control_labels": readiness["control_labels"]},
