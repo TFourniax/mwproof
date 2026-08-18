@@ -71,7 +71,8 @@ def physical_depth_report(items: Iterable[MilestoneObservation]) -> dict[str, An
         "fully_completed_physical_project_ids": [p["project_id"] for p in fully_completed],
         "project_details": projects,
         "interpretation": (
-            "Evidence coverage and physical completion are separate. Designs, contracts, orders and forecasts can map a layer "
-            "without proving delivery. Completed coverage requires an actual event with a defensible physical time window."
+            "Evidence coverage and physical completion are separate. Presence of a physical milestone type does not mean "
+            "the milestone is complete; designs, contracts, orders and forecasts can map a layer without proving delivery. "
+            "Completed coverage requires an actual event with a defensible physical time window."
         ),
     }
