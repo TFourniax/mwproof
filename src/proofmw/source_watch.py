@@ -6,15 +6,13 @@ from typing import Any, Iterable
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
-from .event_ledger import MilestoneObservation
-
-_AUTHORITATIVE = {"government", "regulator", "grid-operator", "company-filing", "developer-oem-announcement", "developer-release", "developer", "oem"}
+from .event_ledger import AUTHORITATIVE_SOURCE_CLASSES, MilestoneObservation
 
 
 def build_watchlist(items: Iterable[MilestoneObservation], *, authoritative_only: bool = True) -> list[dict[str, Any]]:
     grouped: dict[str, dict[str, Any]] = {}
     for row in items:
-        if authoritative_only and row.source_class not in _AUTHORITATIVE:
+        if authoritative_only and row.source_class not in AUTHORITATIVE_SOURCE_CLASSES:
             continue
         entry = grouped.setdefault(row.source_url, {"url": row.source_url, "source_class": row.source_class, "source_title": row.source_title, "projects": set(), "last_observed_on": row.observed_on})
         entry["projects"].add(row.project_id)
@@ -23,7 +21,7 @@ def build_watchlist(items: Iterable[MilestoneObservation], *, authoritative_only
 
 
 def fetch_snapshot(url: str, *, timeout: float = 12.0, max_bytes: int = 2_000_000) -> dict[str, Any]:
-    request = Request(url, headers={"User-Agent": "ProofMW-EvidenceWatch/0.3 (+https://github.com/TFourniax/mwproof)", "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8"})
+    request = Request(url, headers={"User-Agent": "ProofMW-EvidenceWatch/0.6 (+https://github.com/TFourniax/mwproof)", "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8"})
     fetched_at = datetime.now(timezone.utc).isoformat()
     try:
         with urlopen(request, timeout=timeout) as response:
