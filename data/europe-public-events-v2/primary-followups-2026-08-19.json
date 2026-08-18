@@ -2,260 +2,39 @@
   "schema_version": "1.0",
   "cohort": "primary-followups-2026-08-19",
   "projects": {
-    "greenmountain-hamar-b1": {
-      "name": "Green Mountain OSL2-Hamar Building 1",
-      "operator": "Green Mountain",
-      "country": "Norway"
-    },
-    "greenmountain-hamar-campus": {
-      "name": "Green Mountain OSL2-Hamar TikTok Campus",
-      "operator": "Green Mountain",
-      "country": "Norway"
-    },
-    "colt-hayes1": {
-      "name": "Colt DCS London 4 Hayes",
-      "operator": "Colt Data Centre Services",
-      "country": "United Kingdom"
-    },
-    "maincubes-ber02": {
-      "name": "maincubes BER02 mainHub Berlin Nauen",
-      "operator": "maincubes",
-      "country": "Germany"
-    },
-    "ironmountain-mad1": {
-      "name": "Iron Mountain Madrid first 20MW facility",
-      "operator": "Iron Mountain Data Centers",
-      "country": "Spain"
-    },
-    "ironmountain-mad2": {
-      "name": "Iron Mountain MAD-2 Madrid",
-      "operator": "Iron Mountain Data Centers",
-      "country": "Spain"
-    },
-    "ironmountain-mad3": {
-      "name": "Iron Mountain MAD-3 Madrid",
-      "operator": "Iron Mountain Data Centers",
-      "country": "Spain"
-    }
+    "greenmountain-hamar-b1": {"name": "Green Mountain OSL2-Hamar Building 1", "operator": "Green Mountain", "country": "Norway"},
+    "greenmountain-hamar-campus": {"name": "Green Mountain OSL2-Hamar TikTok Campus", "operator": "Green Mountain", "country": "Norway"},
+    "colt-hayes1": {"name": "Colt DCS London 4 Hayes", "operator": "Colt Data Centre Services", "country": "United Kingdom"},
+    "maincubes-ber02": {"name": "maincubes BER02 mainHub Berlin Nauen", "operator": "maincubes", "country": "Germany"},
+    "ironmountain-mad1": {"name": "Iron Mountain Madrid first 20MW facility", "operator": "Iron Mountain Data Centers", "country": "Spain"},
+    "ironmountain-mad2": {"name": "Iron Mountain MAD-2 Madrid", "operator": "Iron Mountain Data Centers", "country": "Spain"},
+    "ironmountain-mad3": {"name": "Iron Mountain MAD-3 Madrid", "operator": "Iron Mountain Data Centers", "country": "Spain"}
   },
   "sources": {
-    "tiktok-hamar-b1-live": {
-      "url": "https://newsroom.tiktok.com/migration-data-hamar/?lang=fr",
-      "class": "customer-release",
-      "title": "TikTok confirms first Hamar building operational and migration started"
-    },
-    "tiktok-hamar-campus-live": {
-      "url": "https://newsroom.tiktok.com/data-center-hamar-avril-25?lang=fr",
-      "class": "customer-release",
-      "title": "TikTok confirms all three Hamar buildings online"
-    },
-    "colt-london4-timeline": {
-      "url": "https://www.coltdatacentres.net/en-GB/our-locations/data-centre-locations-europe/london-4/timeline",
-      "class": "developer",
-      "title": "Colt London 4 construction timeline"
-    },
-    "maincubes-ber02-current": {
-      "url": "https://www.maincubes.com/en/data-centers/berlin-cloud-ai-provider-campus-ber02/",
-      "class": "developer",
-      "title": "maincubes BER02 current delivery schedule and technical profile"
-    },
-    "ironmountain-madrid-2026": {
-      "url": "https://resources.ironmountain.com/solution-guides/d/data-centers-madrid-campus-brochure",
-      "class": "developer",
-      "title": "Iron Mountain Madrid campus June 2026 delivery schedule"
-    }
+    "tiktok-hamar-b1-live": {"url": "https://newsroom.tiktok.com/migration-data-hamar/?lang=fr", "class": "customer-release", "title": "TikTok confirms first Hamar building operational and migration started"},
+    "tiktok-hamar-campus-live": {"url": "https://newsroom.tiktok.com/data-center-hamar-avril-25?lang=fr", "class": "customer-release", "title": "TikTok confirms all three Hamar buildings online"},
+    "colt-london4-timeline": {"url": "https://www.coltdatacentres.net/en-GB/our-locations/data-centre-locations-europe/london-4/timeline", "class": "developer", "title": "Colt London 4 construction timeline"},
+    "maincubes-ber02-current": {"url": "https://www.maincubes.com/en/data-centers/berlin-cloud-ai-provider-campus-ber02/", "class": "developer", "title": "maincubes BER02 current delivery schedule and technical profile"},
+    "ironmountain-madrid-2026": {"url": "https://resources.ironmountain.com/solution-guides/d/data-centers-madrid-campus-brochure", "class": "developer", "title": "Iron Mountain Madrid campus June 2026 delivery schedule"}
   },
   "events": [
-    {
-      "p": "greenmountain-hamar-b1",
-      "m": "operations",
-      "type": "operations",
-      "observed": "2024-10-31",
-      "status": "actual",
-      "src": "tiktok-hamar-b1-live",
-      "precision": "day",
-      "mw": 30,
-      "notes": "Customer confirms the first Hamar building is operational and user-data migration has started. Exact commissioning/COD is not disclosed, so no actual date is fabricated; this is a real but temporally unscorable outcome confirmation."
-    },
-    {
-      "p": "greenmountain-hamar-campus",
-      "m": "all-three-buildings-operational",
-      "type": "operations",
-      "observed": "2025-04-03",
-      "status": "actual",
-      "src": "tiktok-hamar-campus-live",
-      "precision": "day",
-      "mw": 90,
-      "notes": "TikTok confirms all three Hamar buildings are online. Capacity is the three 30MW buildings described in the existing project history. Exact commissioning dates for buildings 2 and 3 are not disclosed here, so this current-state evidence is not converted into forecast-to-actual labels."
-    },
-    {
-      "p": "colt-hayes1",
-      "m": "groundbreaking",
-      "type": "construction",
-      "observed": "2026-08-19",
-      "status": "actual",
-      "src": "colt-london4-timeline",
-      "precision": "month",
-      "actual": "2023-02-01",
-      "mw": 31,
-      "notes": "Retrospective first-party construction timeline; evidence becomes historically knowable to ProofMW only on observed_on, not at the physical milestone date."
-    },
-    {
-      "p": "colt-hayes1",
-      "m": "foundations-laid",
-      "type": "construction",
-      "observed": "2026-08-19",
-      "status": "actual",
-      "src": "colt-london4-timeline",
-      "precision": "month",
-      "actual": "2023-06-01",
-      "mw": 31
-    },
-    {
-      "p": "colt-hayes1",
-      "m": "topping-out",
-      "type": "construction",
-      "observed": "2026-08-19",
-      "status": "actual",
-      "src": "colt-london4-timeline",
-      "precision": "month",
-      "actual": "2024-06-01",
-      "mw": 31,
-      "notes": "Roof and final steel beam completed; physical structure complete."
-    },
-    {
-      "p": "colt-hayes1",
-      "m": "cooling-equipment-installed",
-      "type": "cooling",
-      "observed": "2026-08-19",
-      "status": "actual",
-      "src": "colt-london4-timeline",
-      "precision": "month",
-      "actual": "2025-05-01",
-      "mw": 31,
-      "notes": "Critical cooling equipment delivered and installed on the roof."
-    },
-    {
-      "p": "colt-hayes1",
-      "m": "generators-fitted",
-      "type": "power",
-      "observed": "2026-08-19",
-      "status": "actual",
-      "src": "colt-london4-timeline",
-      "precision": "month",
-      "actual": "2026-04-01",
-      "mw": 31,
-      "notes": "Diesel power generators positioned on site. This is backup-power delivery evidence, not grid energisation or operational RFS."
-    },
-    {
-      "p": "colt-hayes1",
-      "m": "construction-progress",
-      "type": "construction",
-      "observed": "2026-08-19",
-      "status": "actual",
-      "src": "colt-london4-timeline",
-      "precision": "month",
-      "actual": "2026-06-01",
-      "mw": 31,
-      "notes": "Official timeline still describes London 4 as under construction; this prevents physical progress evidence from being misread as operational completion."
-    },
-    {
-      "p": "maincubes-ber02",
-      "m": "construction-start",
-      "type": "construction",
-      "observed": "2026-08-19",
-      "status": "revised_forecast",
-      "src": "maincubes-ber02-current",
-      "precision": "quarter",
-      "target_start": "2026-01-01",
-      "target_end": "2026-03-31",
-      "mw": null,
-      "notes": "Current first-party schedule states construction start Q1 2026, revising the earlier 2025 forecast retained elsewhere in the ledger. Current page labels BER02 as Construction but does not disclose an exact physical start date, so this remains a schedule claim rather than a fabricated actual."
-    },
-    {
-      "p": "maincubes-ber02",
-      "m": "operations",
-      "type": "operations",
-      "observed": "2026-08-19",
-      "status": "revised_forecast",
-      "src": "maincubes-ber02-current",
-      "precision": "quarter",
-      "target_start": "2028-01-01",
-      "target_end": "2028-03-31",
-      "mw": null,
-      "notes": "Current page states 144–186MW IT capacity depending on design; scalar capacity remains null to avoid collapsing a design range."
-    },
-    {
-      "p": "maincubes-ber02",
-      "m": "onsite-substation-design",
-      "type": "power",
-      "observed": "2026-08-19",
-      "status": "forecast",
-      "src": "maincubes-ber02-current",
-      "precision": "day",
-      "mw": null,
-      "notes": "Current technical profile specifies a dedicated 200MVA on-site 110/20kV substation with redundant transformers. MVA is intentionally not converted to MW."
-    },
-    {
-      "p": "ironmountain-mad1",
-      "m": "operations",
-      "type": "operations",
-      "observed": "2026-06-26",
-      "status": "revised_forecast",
-      "src": "ironmountain-madrid-2026",
-      "precision": "quarter",
-      "target_start": "2027-01-01",
-      "target_end": "2027-03-31",
-      "mw": 20,
-      "notes": "The additional 20MW that had previously been targeted for 2024 is now described as in development with Q1 2027 completion. The longitudinal revision is preserved rather than overwriting the original claim."
-    },
-    {
-      "p": "ironmountain-mad1",
-      "m": "existing-live-capacity",
-      "type": "operations",
-      "observed": "2026-06-26",
-      "status": "actual",
-      "src": "ironmountain-madrid-2026",
-      "precision": "day",
-      "mw": 3,
-      "notes": "Iron Mountain states 3MW is live today. Exact activation date is not disclosed, so no actual_date is invented and this does not resolve the separate 20MW expansion forecast."
-    },
-    {
-      "p": "ironmountain-mad1",
-      "m": "campus-power-agreement",
-      "type": "power",
-      "observed": "2026-06-26",
-      "status": "actual",
-      "src": "ironmountain-madrid-2026",
-      "precision": "day",
-      "mw": 79,
-      "notes": "Official campus brochure states Iberdrola power agreement secured and 79MW of customer power allocated for development. This is contractual/allocation evidence, not 79MW of live IT load."
-    },
-    {
-      "p": "ironmountain-mad2",
-      "m": "operations",
-      "type": "operations",
-      "observed": "2026-06-26",
-      "status": "forecast",
-      "src": "ironmountain-madrid-2026",
-      "precision": "quarter",
-      "target_start": "2026-10-01",
-      "target_end": "2026-12-31",
-      "mw": null,
-      "notes": "MAD-2 and MAD-3 total 20MW / four 5MW halls, but the source does not disclose a facility-specific MW split; none is inferred."
-    },
-    {
-      "p": "ironmountain-mad3",
-      "m": "operations",
-      "type": "operations",
-      "observed": "2026-06-26",
-      "status": "forecast",
-      "src": "ironmountain-madrid-2026",
-      "precision": "quarter",
-      "target_start": "2027-04-01",
-      "target_end": "2027-06-30",
-      "mw": null,
-      "notes": "MAD-2 and MAD-3 total 20MW / four 5MW halls, but the source does not disclose a facility-specific MW split; none is inferred."
-    }
+    {"p":"greenmountain-hamar-b1","m":"operations","type":"operations","observed":"2024-10-31","status":"actual","src":"tiktok-hamar-b1-live","precision":"day","mw":null,"notes":"Customer confirms the first Hamar building is operational and user-data migration has started. Exact commissioning/COD is not disclosed, so no actual date is fabricated; this is a real but temporally unscorable outcome confirmation."},
+    {"p":"greenmountain-hamar-campus","m":"all-three-buildings-operational","type":"operations","observed":"2025-04-03","status":"actual","src":"tiktok-hamar-campus-live","precision":"day","mw":null,"notes":"TikTok confirms all three Hamar buildings are online. Exact commissioning dates for buildings 2 and 3 are not disclosed here, so this current-state evidence is not converted into forecast-to-actual labels."},
+
+    {"p":"colt-hayes1","m":"groundbreaking","type":"construction","observed":"2026-08-19","status":"actual","src":"colt-london4-timeline","precision":"month","actual":"2023-02-01","mw":31,"notes":"Retrospective first-party construction timeline; evidence becomes historically knowable to ProofMW only on observed_on, not at the physical milestone date."},
+    {"p":"colt-hayes1","m":"foundations-laid","type":"construction","observed":"2026-08-19","status":"actual","src":"colt-london4-timeline","precision":"month","actual":"2023-04-01","mw":31},
+    {"p":"colt-hayes1","m":"topping-out","type":"construction","observed":"2026-08-19","status":"actual","src":"colt-london4-timeline","precision":"month","actual":"2024-05-01","mw":31,"notes":"Roof and final steel beam completed; physical structure complete."},
+    {"p":"colt-hayes1","m":"cooling-equipment-installed","type":"cooling","observed":"2026-08-19","status":"actual","src":"colt-london4-timeline","precision":"month","actual":"2025-03-01","mw":31,"notes":"Critical cooling equipment delivered and installed on the roof."},
+    {"p":"colt-hayes1","m":"generators-fitted","type":"power","observed":"2026-08-19","status":"actual","src":"colt-london4-timeline","precision":"month","actual":"2025-05-01","mw":31,"notes":"Diesel power generators positioned on site. This is backup-power delivery evidence, not grid energisation or operational RFS."},
+    {"p":"colt-hayes1","m":"construction-progress","type":"construction","observed":"2026-08-19","status":"actual","src":"colt-london4-timeline","precision":"month","actual":"2026-06-01","mw":31,"notes":"Official timeline still describes London 4 as under construction; this prevents physical progress evidence from being misread as operational completion."},
+
+    {"p":"maincubes-ber02","m":"construction-start","type":"construction","observed":"2026-08-19","status":"revised_forecast","src":"maincubes-ber02-current","precision":"quarter","target_start":"2026-01-01","target_end":"2026-03-31","mw":null,"notes":"Current first-party schedule states construction start Q1 2026, revising the earlier 2025 forecast retained elsewhere in the ledger. Current page labels BER02 as Construction but does not disclose an exact physical start date, so this remains a schedule claim rather than a fabricated actual."},
+    {"p":"maincubes-ber02","m":"onsite-substation-design","type":"power","observed":"2026-08-19","status":"proposal","src":"maincubes-ber02-current","precision":"day","mw":null,"notes":"Current technical profile specifies a dedicated 200MVA on-site 110/20kV substation with redundant transformers. MVA is intentionally not converted to MW."},
+
+    {"p":"ironmountain-mad1","m":"operations","type":"operations","observed":"2026-06-26","status":"revised_forecast","src":"ironmountain-madrid-2026","precision":"quarter","target_start":"2027-01-01","target_end":"2027-03-31","mw":20,"notes":"The additional 20MW that had previously been targeted for 2024 is now described as in development with Q1 2027 completion. The longitudinal revision is preserved rather than overwriting the original claim."},
+    {"p":"ironmountain-mad1","m":"existing-live-capacity","type":"operations","observed":"2026-06-26","status":"actual","src":"ironmountain-madrid-2026","precision":"day","mw":3,"notes":"Iron Mountain states 3MW is live today. Exact activation date is not disclosed, so no actual_date is invented and this does not resolve the separate 20MW expansion forecast."},
+    {"p":"ironmountain-mad1","m":"campus-power-agreement","type":"power","observed":"2026-06-26","status":"actual","src":"ironmountain-madrid-2026","precision":"day","mw":79,"notes":"Official campus brochure states Iberdrola power agreement secured and 79MW of customer power allocated for development. This is contractual/allocation evidence, not 79MW of live IT load."},
+    {"p":"ironmountain-mad2","m":"operations","type":"operations","observed":"2026-06-26","status":"forecast","src":"ironmountain-madrid-2026","precision":"quarter","target_start":"2026-10-01","target_end":"2026-12-31","mw":null,"notes":"MAD-2 and MAD-3 total 20MW / four 5MW halls, but the source does not disclose a facility-specific MW split; none is inferred."},
+    {"p":"ironmountain-mad3","m":"operations","type":"operations","observed":"2026-06-26","status":"forecast","src":"ironmountain-madrid-2026","precision":"quarter","target_start":"2027-04-01","target_end":"2027-06-30","mw":null,"notes":"MAD-2 and MAD-3 total 20MW / four 5MW halls, but the source does not disclose a facility-specific MW split; none is inferred."}
   ]
 }
