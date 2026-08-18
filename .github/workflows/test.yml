@@ -22,3 +22,10 @@ jobs:
         run: python -m pytest -q
       - name: Exercise public demo guardrail
         run: PYTHONPATH=src python -m proofmw.cli grade fixtures/start-campus-sin02-public/project.json
+      - name: Validate public evidence graph
+        run: |
+          PYTHONPATH=src python -m proofmw.cli ledger-summary data/europe-public-events-v1.json
+          PYTHONPATH=src python -m proofmw.cli ledger-conflicts data/europe-public-events-v1.json
+          PYTHONPATH=src python -m proofmw.cli data-quality data/europe-public-events-v1.json
+          PYTHONPATH=src python -m proofmw.cli permitting-summary data/europe-public-events-v1.json
+          PYTHONPATH=src python -m proofmw.cli backtest data/europe-public-events-v1.json --milestone-type operations
