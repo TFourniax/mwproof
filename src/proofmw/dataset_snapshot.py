@@ -58,7 +58,7 @@ def dataset_snapshot(items: Iterable[MilestoneObservation], *, as_of: str | None
     unscored_actual = sum(1 for x in rows if x.status == "actual" and actual_window(x) is None)
 
     return {
-        "snapshot_version": "ProofMW Coverage Snapshot v1.1",
+        "snapshot_version": "ProofMW Coverage Snapshot v1.2",
         "as_of": cutoff,
         "ledger_sha256": ledger_fingerprint(rows),
         "coverage_claim": "Dated public-evidence coverage snapshot; not a claim of complete market coverage or universal market completeness. Absence from the ledger means not yet evidenced in this corpus, not absence in reality.",
@@ -69,6 +69,16 @@ def dataset_snapshot(items: Iterable[MilestoneObservation], *, as_of: str | None
         "concentration": quality["concentration"],
         "labels": {"resolved_operations": len(resolved_ops), "certainly_early_or_on_time_operations": certain_on_time, "certainly_materially_delayed_operations": certain_delayed, "interval_ambiguous_operations": ambiguous, "confirmed_actual_without_scorable_time": unscored_actual, "terminal_negative_events": sum(1 for x in rows if x.status in {"canceled", "denied", "withdrawn"}), "classification_rule": "Control labels require the whole slippage interval to fall on one side of the 90-day threshold; current-state confirmations without a defensible date are not scored."},
         "open_forecasts": {"unresolved": len(unresolved), "overdue": len(overdue), "stale_over_365d": len(stale), "top_overdue": sorted(overdue, key=lambda x: x["overdue_days"] or 0, reverse=True)[:25]},
-        "physical_depth": {"projects_with_any_physical_evidence": physical["projects_with_any_physical_evidence"], "projects_with_at_least_three_physical_types": physical["projects_with_at_least_three_physical_types"], "fully_mapped_projects": physical["fully_mapped_projects"], "fully_mapped_project_ids": physical["fully_mapped_project_ids"]},
+        "physical_depth": {
+            "projects_with_any_physical_evidence": physical["projects_with_any_physical_evidence"],
+            "projects_with_at_least_three_physical_types": physical["projects_with_at_least_three_physical_types"],
+            "fully_mapped_projects": physical["fully_mapped_projects"],
+            "fully_mapped_project_ids": physical["fully_mapped_project_ids"],
+            "projects_with_any_completed_physical_type": physical["projects_with_any_completed_physical_type"],
+            "projects_with_at_least_three_completed_physical_types": physical["projects_with_at_least_three_completed_physical_types"],
+            "fully_completed_physical_projects": physical["fully_completed_physical_projects"],
+            "fully_completed_physical_project_ids": physical["fully_completed_physical_project_ids"],
+            "interpretation": "Documentary physical coverage is not physical completion. Completion requires an actual event with a defensible physical time window."
+        },
         "readiness": {"status": readiness["status"], "failed_gates": readiness["failed_gates"], "gates": readiness["gates"], "control_labels": readiness["control_labels"]},
     }
