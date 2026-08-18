@@ -23,9 +23,13 @@ def walk_forward_delay_backtest(
 ) -> dict[str, Any]:
     """Backtest public schedule-delay baselines without temporal leakage.
 
-    Each example is predicted using only resolved outcomes whose actual date was
+    Each example is predicted using only resolved outcomes whose *actual date* was
     already observable on or before that example's forecast observation date.
     This intentionally makes early reports sparse rather than leaking future data.
+
+    Baselines:
+    - developer_target: predicts zero slippage (the public target is met at midpoint)
+    - historical_median: predicts median slippage among prior knowable outcomes
     """
     if min_history < 1:
         raise ValueError("min_history must be >= 1")
@@ -71,7 +75,7 @@ def walk_forward_delay_backtest(
             "historical_median_error_days": historical_error,
         })
 
-    status = "READY" if historical_errors else "INSUFFICIENT_HISTORY"
+    status = "SCORABLE_BASELINE" if historical_errors else "INSUFFICIENT_HISTORY"
     return {
         "status": status,
         "method": "walk-forward; outcomes enter training only after their actual date is knowable",
@@ -80,9 +84,20 @@ def walk_forward_delay_backtest(
         "historical_baseline_scored_examples": len(historical_errors),
         "min_history": min_history,
         "metrics": {
-            "developer_target": {"mae_days": _mae(developer_errors), "bias_days": _bias(developer_errors), "n": len(developer_errors)},
-            "historical_median": {"mae_days": _mae(historical_errors), "bias_days": _bias(historical_errors), "n": len(historical_errors)},
+            "developer_target": {
+                "mae_days": _mae(developer_errors),
+                "bias_days": _bias(developer_errors),
+                "n": len(developer_errors),
+            },
+            "historical_median": {
+                "mae_days": _mae(historical_errors),
+                "bias_days": _bias(historical_errors),
+                "n": len(historical_errors),
+            },
         },
         "examples": examples,
-        "warning": "Public v1 data are selection-biased and sparse. A READY status means the code can score a baseline, not that ProofMW has a production-calibrated underwriting model.",
+        "warning": (
+            "Public v1 data are selection-biased and sparse. A SCORABLE_BASELINE status means the code can score a baseline, "
+            "not that ProofMW has a production-calibrated underwriting model."
+        ),
     }

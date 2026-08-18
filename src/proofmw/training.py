@@ -4,7 +4,7 @@ from collections import defaultdict
 from datetime import date
 from typing import Any, Iterable
 
-from .event_ledger import MilestoneObservation, FORECAST_STATUSES, TERMINAL_NEGATIVE, _midpoint
+from .event_ledger import MilestoneObservation, FORECAST_STATUSES, TERMINAL_NEGATIVE, _midpoint, actual_window
 
 
 def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str, Any]]:
@@ -33,8 +33,11 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
             label_actual = None
             slippage = None
             if future_actual and future_actual.actual_date and date.fromisoformat(future_actual.observed_on) > observed:
-                label_actual = future_actual.actual_date
-                slippage = (date.fromisoformat(future_actual.actual_date) - target).days
+                bounds = actual_window(future_actual)
+                if bounds is not None:
+                    actual_mid = bounds[0] + (bounds[1] - bounds[0]) / 2
+                    label_actual = future_actual.actual_date
+                    slippage = (actual_mid - target).days
             canceled = bool(future_negative and date.fromisoformat(future_negative.observed_on) > observed)
             output.append({
                 "example_id": f"{project_id}:{milestone_id}:{observation.event_id}",
@@ -52,7 +55,11 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
                     "source_weight": observation.source_weight,
                     "prior_forecast_revisions": prior_forecasts,
                 },
-                "labels": {"actual_date": label_actual, "slippage_days": slippage, "terminal_negative_after_forecast": canceled},
+                "labels": {
+                    "actual_date": label_actual,
+                    "slippage_days": slippage,
+                    "terminal_negative_after_forecast": canceled,
+                },
             })
             prior_forecasts += 1
     return output

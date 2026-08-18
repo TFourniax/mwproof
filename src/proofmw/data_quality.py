@@ -41,16 +41,32 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
     source_class_counts = Counter(x.source_class for x in rows)
     precision_counts = Counter(x.precision for x in rows)
     unique_sources = {x.source_url for x in rows}
-    authoritative = sum(1 for x in rows if x.source_class in {"government", "regulator", "grid-operator", "developer-oem-announcement", "developer-release", "developer", "oem"})
+    authoritative = sum(1 for x in rows if x.source_class in {"government", "regulator", "grid-operator", "company-filing", "developer-oem-announcement", "developer-release", "developer", "oem"})
+    project_operators = {project_id: next((x.operator for x in events if x.operator), None) for project_id, events in by_project.items()}
+    operator_project_counts = Counter(x for x in project_operators.values() if x)
+    largest_operator_count = max(operator_project_counts.values(), default=0)
+    largest_operator_share = largest_operator_count / len(by_project) if by_project else 0.0
 
     return {
-        "scope": {"observations": len(rows), "projects": len(by_project), "unique_sources": len(unique_sources)},
+        "scope": {
+            "observations": len(rows),
+            "projects": len(by_project),
+            "unique_sources": len(unique_sources),
+            "operators": len(operator_project_counts),
+        },
         "provenance": {
             "source_class_counts": dict(sorted(source_class_counts.items())),
             "authoritative_or_first_party_ratio": round(authoritative / len(rows), 4) if rows else 0.0,
         },
+        "concentration": {
+            "operator_project_counts": dict(sorted(operator_project_counts.items())),
+            "largest_operator_project_share": round(largest_operator_share, 4),
+        },
         "precision_counts": dict(sorted(precision_counts.items())),
         "source_conflicts": len(conflicts),
         "projects": project_rows,
-        "interpretation": "This report measures structural coverage/provenance only. It deliberately does not convert source classes or completeness into a probability of project success.",
+        "interpretation": (
+            "This report measures structural coverage/provenance only. It deliberately does not convert source classes "
+            "or completeness into a probability of project success."
+        ),
     }
