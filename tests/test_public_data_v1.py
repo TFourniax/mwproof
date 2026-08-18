@@ -111,9 +111,23 @@ def test_training_exports_are_as_of_safe_and_interval_aware():
         label = row["labels"]
         actual = label["actual_date"]
         if actual:
-            assert actual >= row["features"]["as_of"]
+            # The physical event may predate a later still-public forecast/revision.
+            # Anti-leakage is governed by when evidence of the outcome became knowable,
+            # not by forcing the retrospective physical date to be after every feature row.
             assert label["actual_window_start"] <= actual <= label["actual_window_end"]
             assert label["actual_evidence_observed_on"] > row["features"]["as_of"]
+
+
+def test_training_allows_retrospective_physical_date_but_not_future_evidence_leakage():
+    rows = load_event_ledger(LEDGER)
+    forecast_rows = build_training_rows(rows)
+    den_revision = next(
+        row for row in forecast_rows
+        if row["features"]["project_id"] == "atnorth-den01"
+        and row["features"]["as_of"] == "2025-11-26"
+    )
+    assert den_revision["labels"]["actual_date"] < den_revision["features"]["as_of"]
+    assert den_revision["labels"]["actual_evidence_observed_on"] > den_revision["features"]["as_of"]
 
 
 def test_walk_forward_backtest_does_not_leak_future_outcomes():
