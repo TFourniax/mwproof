@@ -11,7 +11,8 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
     """Build leakage-aware supervised examples from event histories.
 
     Features contain only information observable at each forecast date. Labels may
-    use later outcomes. This file is an export primitive, not an ML model.
+    use later outcomes. Coarse actual dates are exported as an interval plus midpoint,
+    never as a fake exact raw anchor.
     """
     grouped: dict[tuple[str, str], list[MilestoneObservation]] = defaultdict(list)
     for item in items:
@@ -31,13 +32,27 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
                 continue
             observed = date.fromisoformat(observation.observed_on)
             label_actual = None
+            actual_start = None
+            actual_end = None
+            actual_precision = None
+            actual_evidence_observed_on = None
             slippage = None
+            slippage_low = None
+            slippage_high = None
             if future_actual and future_actual.actual_date and date.fromisoformat(future_actual.observed_on) > observed:
                 bounds = actual_window(future_actual)
                 if bounds is not None:
                     actual_mid = bounds[0] + (bounds[1] - bounds[0]) / 2
-                    label_actual = future_actual.actual_date
+                    label_actual = actual_mid.isoformat()
+                    actual_start = bounds[0].isoformat()
+                    actual_end = bounds[1].isoformat()
+                    actual_precision = future_actual.precision
+                    actual_evidence_observed_on = future_actual.observed_on
                     slippage = (actual_mid - target).days
+                    target_start = date.fromisoformat(observation.target_start or observation.target_end)
+                    target_end = date.fromisoformat(observation.target_end or observation.target_start)
+                    slippage_low = (bounds[0] - target_end).days
+                    slippage_high = (bounds[1] - target_start).days
             canceled = bool(future_negative and date.fromisoformat(future_negative.observed_on) > observed)
             output.append({
                 "example_id": f"{project_id}:{milestone_id}:{observation.event_id}",
@@ -49,7 +64,10 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
                     "milestone_type": observation.milestone_type,
                     "target_midpoint": target.isoformat(),
                     "days_from_observation_to_target": (target - observed).days,
-                    "target_window_days": (date.fromisoformat(observation.target_end or observation.target_start) - date.fromisoformat(observation.target_start or observation.target_end)).days,
+                    "target_window_days": (
+                        date.fromisoformat(observation.target_end or observation.target_start)
+                        - date.fromisoformat(observation.target_start or observation.target_end)
+                    ).days,
                     "capacity_mw": observation.capacity_mw,
                     "source_class": observation.source_class,
                     "source_weight": observation.source_weight,
@@ -57,7 +75,13 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
                 },
                 "labels": {
                     "actual_date": label_actual,
+                    "actual_window_start": actual_start,
+                    "actual_window_end": actual_end,
+                    "actual_precision": actual_precision,
+                    "actual_evidence_observed_on": actual_evidence_observed_on,
                     "slippage_days": slippage,
+                    "slippage_low_days": slippage_low,
+                    "slippage_high_days": slippage_high,
                     "terminal_negative_after_forecast": canceled,
                 },
             })
@@ -66,7 +90,11 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
 
 
 def build_hazard_rows(items: Iterable[MilestoneObservation]) -> list[dict[str, Any]]:
-    """Create as-of rows for permitting/development survival models."""
+    """Create as-of rows for permitting/development survival models.
+
+    Resolution availability is based on the date the resolution evidence became
+    observable, while physical actual_date remains available as a separate label.
+    """
     grouped: dict[tuple[str, str], list[MilestoneObservation]] = defaultdict(list)
     for item in items:
         if item.milestone_type in {"permitting", "development"}:
@@ -82,7 +110,7 @@ def build_hazard_rows(items: Iterable[MilestoneObservation]) -> list[dict[str, A
             resolution = terminal or positive
             days_to_resolution = None
             if resolution is not None:
-                resolution_date = date.fromisoformat(resolution.actual_date or resolution.observed_on)
+                resolution_date = date.fromisoformat(resolution.observed_on)
                 days_to_resolution = (resolution_date - date.fromisoformat(observation.observed_on)).days
             output.append({
                 "example_id": f"hazard:{project_id}:{milestone_id}:{observation.event_id}",
@@ -101,6 +129,8 @@ def build_hazard_rows(items: Iterable[MilestoneObservation]) -> list[dict[str, A
                 "labels": {
                     "terminal_negative_after_observation": terminal is not None,
                     "positive_resolution_after_observation": positive is not None and terminal is None,
+                    "resolution_evidence_observed_on": resolution.observed_on if resolution else None,
+                    "physical_actual_date": positive.actual_date if positive else None,
                     "days_to_resolution": days_to_resolution,
                 },
             })

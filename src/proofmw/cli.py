@@ -6,7 +6,9 @@ from pathlib import Path
 
 from .backtest import walk_forward_delay_backtest
 from .base_rates import delay_base_rate, hierarchical_delay_base_rate
+from .calibration import walk_forward_interval_calibration
 from .data_quality import data_quality_report
+from .dossier import project_dossier
 from .engine import underwrite
 from .event_ledger import detect_source_conflicts, ledger_summary, load_event_ledger
 from .evidence import evidence_coverage
@@ -14,6 +16,8 @@ from .guardrails import underwriting_grade
 from .io import load_project, request_from_dict
 from .permitting import permitting_summary
 from .readiness import calibration_readiness
+from .research_priority import research_priorities
+from .source_watch import build_watchlist, snapshot_watchlist
 from .training import build_hazard_rows, build_training_rows
 
 
@@ -38,13 +42,10 @@ def main() -> None:
 
     ev = sub.add_parser("evidence")
     ev.add_argument("project")
-
     grade = sub.add_parser("grade")
     grade.add_argument("project")
-
     ledger = sub.add_parser("ledger-summary")
     ledger.add_argument("ledger")
-
     conflicts = sub.add_parser("ledger-conflicts")
     conflicts.add_argument("ledger")
 
@@ -57,7 +58,6 @@ def main() -> None:
 
     permits = sub.add_parser("permitting-summary")
     permits.add_argument("ledger")
-
     quality = sub.add_parser("data-quality")
     quality.add_argument("ledger")
     readiness = sub.add_parser("calibration-readiness")
@@ -68,23 +68,40 @@ def main() -> None:
     backtest.add_argument("--milestone-type", default="operations")
     backtest.add_argument("--min-history", type=int, default=2)
 
+    calibration = sub.add_parser("calibration")
+    calibration.add_argument("ledger")
+    calibration.add_argument("--milestone-type", default="operations")
+    calibration.add_argument("--min-history", type=int, default=5)
+
+    priorities = sub.add_parser("research-priorities")
+    priorities.add_argument("ledger")
+
+    dossier = sub.add_parser("project-dossier")
+    dossier.add_argument("ledger")
+    dossier.add_argument("project_id")
+    dossier.add_argument("--as-of")
+
+    watch = sub.add_parser("source-watch")
+    watch.add_argument("ledger")
+    watch.add_argument("--all-sources", action="store_true")
+    watch.add_argument("--limit", type=int, default=50)
+    watch.add_argument("--timeout", type=float, default=12.0)
+    watch.add_argument("--output", required=True)
+
     training = sub.add_parser("export-training")
     training.add_argument("ledger")
     training.add_argument("--output", required=True)
 
     args = parser.parse_args()
-
-    if args.command in {"ledger-summary", "ledger-conflicts", "base-rate", "permitting-summary", "data-quality", "calibration-readiness", "backtest", "export-training"}:
+    data_commands = {"ledger-summary", "ledger-conflicts", "base-rate", "permitting-summary", "data-quality", "calibration-readiness", "backtest", "calibration", "research-priorities", "project-dossier", "source-watch", "export-training"}
+    if args.command in data_commands:
         events = load_event_ledger(args.ledger)
         if args.command == "ledger-summary":
             _dump(ledger_summary(events))
         elif args.command == "ledger-conflicts":
             _dump(detect_source_conflicts(events))
         elif args.command == "base-rate":
-            if args.hierarchical:
-                payload = hierarchical_delay_base_rate(events, args.country, args.milestone_type, args.min_samples)
-            else:
-                payload = delay_base_rate(events, country=args.country, milestone_type=args.milestone_type, min_samples=args.min_samples)
+            payload = hierarchical_delay_base_rate(events, args.country, args.milestone_type, args.min_samples) if args.hierarchical else delay_base_rate(events, country=args.country, milestone_type=args.milestone_type, min_samples=args.min_samples)
             _dump(payload)
         elif args.command == "permitting-summary":
             _dump(permitting_summary(events))
@@ -94,6 +111,15 @@ def main() -> None:
             _dump(calibration_readiness(events))
         elif args.command == "backtest":
             _dump(walk_forward_delay_backtest(events, milestone_type=args.milestone_type, min_history=args.min_history))
+        elif args.command == "calibration":
+            _dump(walk_forward_interval_calibration(events, milestone_type=args.milestone_type, min_history=args.min_history))
+        elif args.command == "research-priorities":
+            _dump(research_priorities(events))
+        elif args.command == "project-dossier":
+            _dump(project_dossier(events, args.project_id, as_of=args.as_of))
+        elif args.command == "source-watch":
+            watchlist = build_watchlist(events, authoritative_only=not args.all_sources)
+            _dump(snapshot_watchlist(watchlist, limit=args.limit, timeout=args.timeout), args.output)
         else:
             _dump({"forecast_rows": build_training_rows(events), "hazard_rows": build_hazard_rows(events)}, args.output)
         return

@@ -15,6 +15,20 @@ def _bias(errors: list[float]) -> float | None:
     return round(sum(errors) / len(errors), 3) if errors else None
 
 
+def _actual_observed_on(
+    items: list[MilestoneObservation], project_id: str, milestone_id: str
+) -> date | None:
+    observed = [
+        date.fromisoformat(x.observed_on)
+        for x in items
+        if x.project_id == project_id
+        and x.milestone_id == milestone_id
+        and x.status == "actual"
+        and x.actual_date
+    ]
+    return min(observed) if observed else None
+
+
 def walk_forward_delay_backtest(
     items: Iterable[MilestoneObservation],
     *,
@@ -23,19 +37,21 @@ def walk_forward_delay_backtest(
 ) -> dict[str, Any]:
     """Backtest public schedule-delay baselines without temporal leakage.
 
-    Each example is predicted using only resolved outcomes whose *actual date* was
-    already observable on or before that example's forecast observation date.
-    This intentionally makes early reports sparse rather than leaking future data.
-
-    Baselines:
-    - developer_target: predicts zero slippage (the public target is met at midpoint)
-    - historical_median: predicts median slippage among prior knowable outcomes
+    A historical outcome enters training only after the *evidence that reports the
+    outcome* was publicly observable. Using the physical actual_date alone can
+    leak information when an opening happened months before it was disclosed.
     """
     if min_history < 1:
         raise ValueError("min_history must be >= 1")
 
-    pairs = [p for p in resolved_forecast_pairs(items) if p.get("milestone_type") == milestone_type]
+    rows = list(items)
+    pairs = [p for p in resolved_forecast_pairs(rows) if p.get("milestone_type") == milestone_type]
     pairs.sort(key=lambda p: (p["forecast_observed_on"], p["project_id"], p["milestone_id"]))
+
+    knowable_dates = {
+        (p["project_id"], p["milestone_id"]): _actual_observed_on(rows, p["project_id"], p["milestone_id"])
+        for p in pairs
+    }
 
     examples: list[dict[str, Any]] = []
     developer_errors: list[float] = []
@@ -47,8 +63,8 @@ def walk_forward_delay_backtest(
             p
             for p in pairs
             if p is not pair
-            and date.fromisoformat(p["actual_date"]) <= cutoff
-            and p["forecast_observed_on"] < pair["forecast_observed_on"]
+            and knowable_dates[(p["project_id"], p["milestone_id"])] is not None
+            and knowable_dates[(p["project_id"], p["milestone_id"])] <= cutoff
         ]
         actual = float(pair["slippage_days"])
         developer_prediction = 0.0
@@ -67,7 +83,16 @@ def walk_forward_delay_backtest(
             "milestone_id": pair["milestone_id"],
             "forecast_observed_on": pair["forecast_observed_on"],
             "actual_date": pair["actual_date"],
+            "actual_evidence_observed_on": (
+                knowable_dates[(pair["project_id"], pair["milestone_id"])].isoformat()
+                if knowable_dates[(pair["project_id"], pair["milestone_id"])]
+                else None
+            ),
             "actual_slippage_days": actual,
+            "actual_slippage_interval_days": {
+                "low": pair.get("slippage_low_days"),
+                "high": pair.get("slippage_high_days"),
+            },
             "prior_resolved_outcomes_available": len(prior),
             "developer_target_prediction_days": developer_prediction,
             "historical_median_prediction_days": historical_prediction,
@@ -78,7 +103,7 @@ def walk_forward_delay_backtest(
     status = "SCORABLE_BASELINE" if historical_errors else "INSUFFICIENT_HISTORY"
     return {
         "status": status,
-        "method": "walk-forward; outcomes enter training only after their actual date is knowable",
+        "method": "walk-forward; outcomes enter training only after outcome evidence is publicly observable",
         "milestone_type": milestone_type,
         "resolved_examples": len(pairs),
         "historical_baseline_scored_examples": len(historical_errors),
@@ -97,7 +122,7 @@ def walk_forward_delay_backtest(
         },
         "examples": examples,
         "warning": (
-            "Public v1 data are selection-biased and sparse. A SCORABLE_BASELINE status means the code can score a baseline, "
-            "not that ProofMW has a production-calibrated underwriting model."
+            "Public evidence remains selection-biased. SCORABLE_BASELINE only means the "
+            "backtest is executable; it does not establish production calibration."
         ),
     }
