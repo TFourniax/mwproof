@@ -61,7 +61,7 @@ def dataset_snapshot(items: Iterable[MilestoneObservation], *, as_of: str | None
         "snapshot_version": "ProofMW Coverage Snapshot v1.1",
         "as_of": cutoff,
         "ledger_sha256": ledger_fingerprint(rows),
-        "coverage_claim": "Dated public-evidence coverage snapshot; not universal market completeness. Absence from the ledger means not yet evidenced in this corpus, not absence in reality.",
+        "coverage_claim": "Dated public-evidence coverage snapshot; not a claim of complete market coverage or universal market completeness. Absence from the ledger means not yet evidenced in this corpus, not absence in reality.",
         "scope": {"observations": len(rows), "projects": quality["scope"]["projects"], "operators": quality["scope"]["operators"], "countries": len({x.country for x in rows if x.country}), "unique_sources": quality["scope"]["unique_sources"], "unique_source_domains": len(source_domains), "milestones": len(grouped), "resolved_forecast_pairs": len(resolved), "resolved_operations": len(resolved_ops)},
         "temporal_coverage": {"first_evidence_observed_on": min(observation_dates).isoformat(), "latest_evidence_observed_on": max(observation_dates).isoformat(), "first_physical_actual_bound": min(a for a, _ in actual_bounds).isoformat() if actual_bounds else None, "latest_physical_actual_bound": max(b for _, b in actual_bounds).isoformat() if actual_bounds else None, "observations_by_year": dict(sorted(by_year.items())), "physical_actual_midpoints_by_year": dict(sorted(actual_by_year.items()))},
         "provenance": {**quality["provenance"], "authoritative_observations": sum(1 for x in rows if x.source_class in AUTHORITATIVE_SOURCE_CLASSES)},
