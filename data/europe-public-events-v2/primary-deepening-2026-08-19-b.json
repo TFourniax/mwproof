@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "cohort": "primary-deepening-2026-08-19-b",
+  "projects": {
+    "equinix-md5-phase1": {"name":"Equinix MD5 Phase 1","operator":"Equinix","country":"Spain"},
+    "cyrusone-fra5": {"name":"CyrusOne FRA5 Hanau","operator":"CyrusOne","country":"Germany"},
+    "cyrusone-fra7": {"name":"CyrusOne FRA7 Frankfurt Westside","operator":"CyrusOne","country":"Germany"},
+    "vantage-lhr2": {"name":"Vantage London II","operator":"Vantage Data Centers","country":"United Kingdom"},
+    "vantage-zrh2": {"name":"Vantage Zurich II","operator":"Vantage Data Centers","country":"Switzerland"},
+    "start-campus-sines": {"name":"SINES Data Campus","operator":"Start Campus","country":"Portugal"},
+    "greenmountain-rju1-20mw": {"name":"Green Mountain RJU1-Rjukan 20MW Expansion","operator":"Green Mountain","country":"Norway"},
+    "virtus-saunderton": {"name":"VIRTUS Saunderton Campus","operator":"Virtus Data Centres","country":"United Kingdom"},
+    "data4-hanau": {"name":"DATA4 Hanau Campus module 1","operator":"DATA4","country":"Germany"}
+  },
+  "sources": {
+    "eq-md5-open": {"url":"https://newsroom.equinix.com/2026-05-22-Equinix-refuerza-su-oferta-en-colocation-con-la-inauguracion-de-MD5-en-Alcobendas","class":"developer-release","title":"Equinix officially inaugurates MD5 Alcobendas"},
+    "cyrus-fra5-ground": {"url":"https://www.cyrusone.com/resources/press-releases/cyrusone-celebrates-breaking-ground-with-city-officials-at-fifth-data-center-in-frankfurt","class":"developer-release","title":"CyrusOne FRA5 groundbreaking and Hanau permitting history"},
+    "cyrus-fra5-current": {"url":"https://www.cyrusone.com/data-centers/emea/frankfurt-germany-fra5","class":"developer","title":"CyrusOne FRA5 current facility page"},
+    "cyrus-fra7-ground-canonical": {"url":"https://www.cyrusone.com/resources/press-releases/cyrusone-breaks-ground-on-most-recent-data-center-in-germany-representing-one-of-the-largest-waste-heat-utilization-projects-in-europe","class":"developer-release","title":"CyrusOne FRA7 canonical July 2024 groundbreaking release"},
+    "cyrus-fra7-current": {"url":"https://www.cyrusone.com/data-centers/emea/frankfurt-germany-fra7","class":"developer","title":"CyrusOne FRA7 current facility technical page"},
+    "cyrus-fra7-power-update": {"url":"https://www.cyrusone.com/resources/press-releases/cyrusone-and-e.on-announce-strategic-partnership-to-overcome-data-center-grid-capacity-constraints-for-customers-in-europe","class":"developer-release","title":"CyrusOne FRA7 May 2026 power architecture update"},
+    "vantage-lhr2-current": {"url":"https://vantage-dc.com/data-center-locations/emea/london-ii-united-kingdom/","class":"developer","title":"Vantage LHR2 current facility page"},
+    "vantage-lhr2-sep25": {"url":"https://vantage-dc.com/news/vantage-data-centers-announces-opening-of-second-london-campus-with-landmark-public-art-installation/","class":"developer-release","title":"Vantage LHR2 September 2025 opening announcement"},
+    "vantage-zrh2-current": {"url":"https://vantage-dc.com/data-center-locations/emea/zurich-ii-switzerland/","class":"developer","title":"Vantage ZRH2 current facility page"},
+    "start-sin02-plan": {"url":"https://blog.startcampus.pt/a-defining-moment-for-start-campus","class":"developer","title":"Start Campus SIN02 October 2025 schedule update"},
+    "gm-rju-current": {"url":"https://greenmountain.no/data-center/tel-rjukan/","class":"developer","title":"Green Mountain TEL-Rjukan current site page"},
+    "virtus-saunderton-current": {"url":"https://virtusdatacentres.com/locations/uk/london/saunderton-campus","class":"developer","title":"VIRTUS Saunderton current campus page"},
+    "data4-hanau-current": {"url":"https://www.data4group.com/en/data-center-in-frankfurt-germany/","class":"developer","title":"DATA4 Hanau current campus page"}
+  },
+  "events": [
+    {"p":"equinix-md5-phase1","m":"operations","type":"operations","observed":"2026-05-22","status":"actual","src":"eq-md5-open","precision":"day","actual":"2026-05-22","mw":null,"notes":"Equinix states MD5 was officially inaugurated on 22 May 2026. This resolves the earlier public MD5 phase-one schedule history."},
+
+    {"p":"cyrusone-fra5","m":"permitting","type":"permitting","observed":"2023-11-29","status":"actual","src":"cyrus-fra5-ground","precision":"month","actual":"2023-07-01","mw":54,"notes":"Retrospective first-party release states permitting was celebrated in July 2023. Month precision retained; disclosure-time is November 2023."},
+    {"p":"cyrusone-fra5","m":"construction_start","type":"construction","observed":"2023-11-29","status":"actual","src":"cyrus-fra5-ground","precision":"day","actual":"2023-11-29","mw":54,"notes":"Official groundbreaking release establishes physical construction milestone."},
+    {"p":"cyrusone-fra5","m":"operations","type":"operations","observed":"2026-08-19","status":"actual","src":"cyrus-fra5-current","precision":"day","mw":54,"notes":"Current first-party facility page describes FRA5 as delivering 54MW with on-site M&E operations. Exact initial service/COD is not disclosed, so the operational state is confirmed but temporally unscored."},
+    {"p":"cyrusone-fra5","m":"cooling-design","type":"cooling","observed":"2026-08-19","status":"current_design","src":"cyrus-fra5-current","precision":"day","mw":54,"notes":"Current facility page documents air-cooled UPS / mechanical cooling architecture. Design/current-state evidence only; not treated as commissioning proof."},
+
+    {"p":"cyrusone-fra7","m":"construction_start","type":"construction","observed":"2026-08-19","status":"actual","src":"cyrus-fra7-ground-canonical","precision":"day","actual":"2024-07-19","mw":81,"notes":"Data correction discovered 2026-08-19: CyrusOne's canonical press archive dates the FRA7 groundbreaking to 19 July 2024. The older ledger row captured a later republishing timestamp. This append-only correction becomes knowable to ProofMW on the correction observation date."},
+    {"p":"cyrusone-fra7","m":"grid-infrastructure","type":"power","observed":"2024-07-19","status":"secured","src":"cyrus-fra7-ground-canonical","precision":"day","mw":null,"notes":"CyrusOne/BEOS report contracted 150MVA utility supply at 110kV plus planned redundant high-voltage connection and dedicated substation. MVA is deliberately not converted to MW."},
+    {"p":"cyrusone-fra7","m":"heat-reuse-design","type":"cooling","observed":"2024-07-19","status":"design","src":"cyrus-fra7-ground-canonical","precision":"day","mw":null,"notes":"Release describes heat-reuse design capable of exporting up to 40MW waste heat at full operation; this is design evidence, not commissioned cooling evidence."},
+    {"p":"cyrusone-fra7","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"cyrus-fra7-current","precision":"day","mw":81,"notes":"Current page describes FRA7 as a campus that will ultimately deliver 81MW, after the original first-phase Q2 2026 target. No current opening date is inferred."},
+    {"p":"cyrusone-fra7","m":"power-architecture-current","type":"power","observed":"2026-08-19","status":"current_design","src":"cyrus-fra7-current","precision":"day","mw":null,"notes":"Current page documents redundant high-voltage grid connection and dedicated substation. Current technical-state evidence only."},
+    {"p":"cyrusone-fra7","m":"cooling-architecture-current","type":"cooling","observed":"2026-08-19","status":"current_design","src":"cyrus-fra7-current","precision":"day","mw":81,"notes":"Current page documents free-cooling technology. Current technical-state evidence only."},
+    {"p":"cyrusone-fra7","m":"power-generation-plan","type":"power","observed":"2026-08-19","status":"revised_design","src":"cyrus-fra7-power-update","precision":"month","mw":null,"notes":"May 2026 update removes the long-term local generation component and prioritizes grid-connected FRA7 delivery; no artificial May day is assigned."},
+
+    {"p":"vantage-lhr2","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"vantage-lhr2-current","precision":"day","mw":20,"notes":"Current official page still calls LHR2 under development after the September 2025 release said it would open at the end of that month. ProofMW preserves the longitudinal inconsistency rather than declaring an opening."},
+    {"p":"vantage-lhr2","m":"power-design","type":"power","observed":"2026-08-19","status":"design","src":"vantage-lhr2-current","precision":"day","mw":20,"notes":"National Grid supply, multiple diverse feeds and N+1 architecture are current design claims, not energisation evidence."},
+    {"p":"vantage-lhr2","m":"cooling-design","type":"cooling","observed":"2026-08-19","status":"design","src":"vantage-lhr2-current","precision":"day","mw":20,"notes":"Closed-loop chilled water and air-side economizer design; not commissioning evidence."},
+    {"p":"vantage-lhr2","m":"network-design","type":"network","observed":"2026-08-19","status":"design","src":"vantage-lhr2-current","precision":"day","mw":20,"notes":"Current page specifies two MMRs, three POEs and diverse fiber pathways. Design/current facility evidence only."},
+
+    {"p":"vantage-zrh2","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"vantage-zrh2-current","precision":"day","mw":24,"notes":"Current official page remains future-tense for ZRH2 technical systems after the April 2024 summer-opening forecast. No actual opening is fabricated."},
+    {"p":"vantage-zrh2","m":"power-design","type":"power","observed":"2026-08-19","status":"design","src":"vantage-zrh2-current","precision":"day","mw":24,"notes":"EKZ power and multiple diverse feeds are documented as design/current facility claims."},
+    {"p":"vantage-zrh2","m":"cooling-design","type":"cooling","observed":"2026-08-19","status":"design","src":"vantage-zrh2-current","precision":"day","mw":24,"notes":"Closed-loop chilled water with air-cooled chillers and economizers; design evidence only."},
+    {"p":"vantage-zrh2","m":"network-design","type":"network","observed":"2026-08-19","status":"design","src":"vantage-zrh2-current","precision":"day","mw":24,"notes":"Two MMRs, two POEs and diverse fiber pathways documented on the current page; not an operational network-completion claim."},
+
+    {"p":"start-campus-sines","m":"sin02-construction-start","type":"construction","observed":"2025-10-30","status":"in_preparation","src":"start-sin02-plan","precision":"day","mw":180,"notes":"Official blog updated 30 Oct 2025 states SIN02 construction preparations are underway. This refines the older month-precision row without claiming physical construction start."},
+    {"p":"start-campus-sines","m":"sin02-ready-for-service","type":"operations","observed":"2025-10-30","status":"revised_forecast","src":"start-sin02-plan","precision":"year","target_start":"2027-01-01","target_end":"2027-12-31","mw":180,"notes":"Start Campus states goal of welcoming first customers into operational SIN02 in 2027."},
+
+    {"p":"greenmountain-rju1-20mw","m":"site-current-capacity","type":"capacity","observed":"2026-08-19","status":"actual","src":"gm-rju-current","precision":"day","mw":50,"notes":"Current TEL-Rjukan site page states total site capacity of 50MW and four buildings. This is site-level current state and does not infer the exact RFS date or MW split of the 2022-announced 20MW expansion phase."},
+    {"p":"greenmountain-rju1-20mw","m":"site-power-current","type":"power","observed":"2026-08-19","status":"operational_context","src":"gm-rju-current","precision":"day","mw":null,"notes":"Current site page reports two grid supplies and nearby hydropower; site-level operating context, not phase-specific energisation evidence."},
+    {"p":"greenmountain-rju1-20mw","m":"site-cooling-current","type":"cooling","observed":"2026-08-19","status":"operational_context","src":"gm-rju-current","precision":"day","mw":null,"notes":"Current TEL-Rjukan page states natural-air free cooling is used approximately 330 days per year; site-level context only."},
+
+    {"p":"virtus-saunderton","m":"capacity-current","type":"capacity","observed":"2026-08-19","status":"current_design","src":"virtus-saunderton-current","precision":"day","mw":78,"notes":"Current VIRTUS page now describes 78MW IT load across four facilities, compared with the 75MW design in the 2024 announcement. This is retained as a capacity-design revision, not an operational completion claim."},
+    {"p":"virtus-saunderton","m":"cooling-current","type":"cooling","observed":"2026-08-19","status":"design","src":"virtus-saunderton-current","precision":"day","mw":78,"notes":"Current page describes liquid-cooling capability supporting racks above 100kW; design evidence only."},
+    {"p":"virtus-saunderton","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"virtus-saunderton-current","precision":"day","mw":78,"notes":"The original Q2 2026 RFS target has passed and the current campus page does not provide an explicit opening/commissioning statement. Recorded as delayed/unresolved rather than inferred actual."},
+
+    {"p":"data4-hanau","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"data4-hanau-current","precision":"day","mw":180,"notes":"Current official campus page still presents the first module as planned for 2025 after that target has passed. No substitute opening date is inferred."}
+  ]
+}
