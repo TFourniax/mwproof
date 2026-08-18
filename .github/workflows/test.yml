@@ -42,6 +42,9 @@ jobs:
           proofmw decision-card data/europe-public-events-v2 start-campus-sines \
             --as-of 2026-08-19 \
             --output build/sines-decision-card.json
+          proofmw project-dossier data/europe-public-events-v2 greenmountain-hamar-b1 \
+            --as-of 2026-08-19 \
+            --output build/hamar-dossier.json
           proofmw export-training data/europe-public-events-v2 \
             --output build/training.json
           proofmw index-ledger data/europe-public-events-v2 \
@@ -70,12 +73,18 @@ jobs:
           else:
               raise SystemExit("API did not become healthy")
 
+          with urllib.request.urlopen(base + "/", timeout=10) as response:
+              html = response.read().decode("utf-8")
+              assert response.status == 200
+              assert "ProofMW V0.6" in html
+
           for path in (
               "/health",
               "/ready",
               "/v1/data/snapshot?as_of=2026-08-19",
               "/v1/data/conditional-benchmark?min_history=5",
               "/v1/projects/start-campus-sines/decision-card?as_of=2026-08-19",
+              "/v1/projects/greenmountain-hamar-b1/dossier?as_of=2026-08-19",
               "/v1/search?country=Portugal&limit=5",
           ):
               with urllib.request.urlopen(base + path, timeout=10) as response:
@@ -85,39 +94,56 @@ jobs:
           PY
           kill "$(cat build/uvicorn.pid)"
 
-      - name: Container build and smoke test
+      - name: Container build and authenticated smoke test
         run: |
           docker build -t proofmw:ci .
-          docker run -d --rm --name proofmw-ci -p 18080:8080 proofmw:ci
+          docker run -d --rm --name proofmw-ci \
+            -e PROOFMW_API_KEY=proofmw-ci-key \
+            -p 18080:8080 proofmw:ci
           python - <<'PY'
           import json
           import time
+          import urllib.error
           import urllib.request
 
-          url = "http://127.0.0.1:18080/ready"
+          base = "http://127.0.0.1:18080"
           for _ in range(40):
               try:
-                  with urllib.request.urlopen(url, timeout=2) as response:
-                      payload = json.loads(response.read())
-                      assert payload["ready"] is True
+                  with urllib.request.urlopen(base + "/health", timeout=2) as response:
+                      health = json.loads(response.read())
+                      assert health["auth_configured"] is True
                       break
               except Exception:
                   time.sleep(0.5)
           else:
-              raise SystemExit("container did not become ready")
+              raise SystemExit("container did not become healthy")
+
+          try:
+              urllib.request.urlopen(base + "/ready", timeout=2)
+          except urllib.error.HTTPError as exc:
+              assert exc.code == 401
+          else:
+              raise AssertionError("protected /ready accepted an unauthenticated request")
+
+          req = urllib.request.Request(base + "/ready", headers={"X-API-Key": "proofmw-ci-key"})
+          with urllib.request.urlopen(req, timeout=5) as response:
+              payload = json.loads(response.read())
+              assert payload["ready"] is True
+              assert payload["version"] == "0.6.0"
           PY
           docker stop proofmw-ci
 
       - name: Upload reproducibility artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: proofmw-v05-artifacts
+          name: proofmw-v06-artifacts
           path: |
             build/dataset-snapshot.json
             build/conditional-benchmark.json
             build/model-risk.json
             build/research-priorities.json
             build/sines-decision-card.json
+            build/hamar-dossier.json
             build/training.json
             build/proofmw.sqlite
             build/query-smoke.json
