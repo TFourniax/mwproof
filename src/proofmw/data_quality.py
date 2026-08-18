@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from typing import Any, Iterable
 
-from .event_ledger import AUTHORITATIVE_SOURCE_CLASSES, MilestoneObservation, detect_source_conflicts
+from .event_ledger import AUTHORITATIVE_SOURCE_CLASSES, MilestoneObservation, actual_window, detect_source_conflicts
 
 
 def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]:
@@ -25,6 +25,7 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
         missing_operator = sum(1 for x in project_events if not x.operator)
         coarse_precision = sum(1 for x in project_events if x.precision in {"year", "half", "half-year", "quarter", "month"})
         bounded_actual = sum(1 for x in project_events if x.actual_start and x.actual_end)
+        unscored_actual = sum(1 for x in project_events if x.status == "actual" and actual_window(x) is None)
         project_rows.append({
             "project_id": project_id,
             "project_name": next((x.project_name for x in project_events if x.project_name), None),
@@ -38,6 +39,7 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
             "missing_operator_rows": missing_operator,
             "coarse_precision_rows": coarse_precision,
             "bounded_actual_rows": bounded_actual,
+            "confirmed_actual_without_scorable_time_rows": unscored_actual,
         })
 
     source_class_counts = Counter(x.source_class for x in rows)
@@ -50,29 +52,17 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
     largest_operator_share = largest_operator_count / len(by_project) if by_project else 0.0
 
     return {
-        "scope": {
-            "observations": len(rows),
-            "projects": len(by_project),
-            "unique_sources": len(unique_sources),
-            "operators": len(operator_project_counts),
-        },
-        "provenance": {
-            "source_class_counts": dict(sorted(source_class_counts.items())),
-            "authoritative_or_first_party_ratio": round(authoritative / len(rows), 4) if rows else 0.0,
-        },
+        "scope": {"observations": len(rows), "projects": len(by_project), "unique_sources": len(unique_sources), "operators": len(operator_project_counts)},
+        "provenance": {"source_class_counts": dict(sorted(source_class_counts.items())), "authoritative_or_first_party_ratio": round(authoritative / len(rows), 4) if rows else 0.0},
         "temporal_precision": {
             "bounded_actual_observations": sum(1 for x in rows if x.actual_start and x.actual_end),
+            "confirmed_actual_without_scorable_time": sum(1 for x in rows if x.status == "actual" and actual_window(x) is None),
         },
-        "concentration": {
-            "operator_project_counts": dict(sorted(operator_project_counts.items())),
-            "largest_operator_project_share": round(largest_operator_share, 4),
-        },
+        "concentration": {"operator_project_counts": dict(sorted(operator_project_counts.items())), "largest_operator_project_share": round(largest_operator_share, 4)},
         "precision_counts": dict(sorted(precision_counts.items())),
         "source_conflicts": len(conflicts),
         "projects": project_rows,
         "interpretation": (
-            "This report measures structural coverage/provenance only. It deliberately does not convert source classes "
-            "or completeness into a probability of project success. Explicit actual bounds preserve interval-censored "
-            "outcomes instead of inventing exact completion dates."
+            "This report measures structural coverage/provenance only. Confirmed actual states with no defensible physical date are retained as facts but excluded from temporal scoring. Explicit actual bounds preserve interval-censored outcomes instead of inventing exact completion dates."
         ),
     }
