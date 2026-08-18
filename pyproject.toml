@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "proofmw"
-version = "0.3.0"
+version = "0.4.0"
 description = "Evidence-backed probabilistic underwriting for AI infrastructure"
 requires-python = ">=3.11"
 dependencies = []

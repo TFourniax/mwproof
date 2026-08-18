@@ -22,7 +22,7 @@ jobs:
         run: python -m pytest -q
       - name: Exercise public demo guardrail
         run: PYTHONPATH=src python -m proofmw.cli grade fixtures/start-campus-sin02-public/project.json
-      - name: Validate public evidence graph and V0.3 research workflows
+      - name: Validate evidence graph and V0.4 model-governance workflows
         run: |
           PYTHONPATH=src python -m proofmw.cli ledger-summary data/europe-public-events-v2
           PYTHONPATH=src python -m proofmw.cli ledger-conflicts data/europe-public-events-v2
@@ -31,5 +31,7 @@ jobs:
           PYTHONPATH=src python -m proofmw.cli permitting-summary data/europe-public-events-v2
           PYTHONPATH=src python -m proofmw.cli backtest data/europe-public-events-v2 --milestone-type operations
           PYTHONPATH=src python -m proofmw.cli calibration data/europe-public-events-v2 --milestone-type operations --min-history 3
+          PYTHONPATH=src python -m proofmw.cli model-risk data/europe-public-events-v2
+          PYTHONPATH=src python -m proofmw.cli physical-depth data/europe-public-events-v2
           PYTHONPATH=src python -m proofmw.cli research-priorities data/europe-public-events-v2
           PYTHONPATH=src python -m proofmw.cli project-dossier data/europe-public-events-v2 start-campus-sines --as-of 2026-08-18

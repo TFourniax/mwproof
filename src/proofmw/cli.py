@@ -14,7 +14,9 @@ from .event_ledger import detect_source_conflicts, ledger_summary, load_event_le
 from .evidence import evidence_coverage
 from .guardrails import underwriting_grade
 from .io import load_project, request_from_dict
+from .model_risk import model_risk_report
 from .permitting import permitting_summary
+from .physical_depth import physical_depth_report
 from .readiness import calibration_readiness
 from .research_priority import research_priorities
 from .source_watch import build_watchlist, snapshot_watchlist
@@ -56,12 +58,9 @@ def main() -> None:
     rates.add_argument("--min-samples", type=int, default=2)
     rates.add_argument("--hierarchical", action="store_true")
 
-    permits = sub.add_parser("permitting-summary")
-    permits.add_argument("ledger")
-    quality = sub.add_parser("data-quality")
-    quality.add_argument("ledger")
-    readiness = sub.add_parser("calibration-readiness")
-    readiness.add_argument("ledger")
+    for name in ("permitting-summary", "data-quality", "calibration-readiness", "research-priorities", "physical-depth", "model-risk"):
+        p = sub.add_parser(name)
+        p.add_argument("ledger")
 
     backtest = sub.add_parser("backtest")
     backtest.add_argument("ledger")
@@ -72,9 +71,6 @@ def main() -> None:
     calibration.add_argument("ledger")
     calibration.add_argument("--milestone-type", default="operations")
     calibration.add_argument("--min-history", type=int, default=5)
-
-    priorities = sub.add_parser("research-priorities")
-    priorities.add_argument("ledger")
 
     dossier = sub.add_parser("project-dossier")
     dossier.add_argument("ledger")
@@ -93,7 +89,7 @@ def main() -> None:
     training.add_argument("--output", required=True)
 
     args = parser.parse_args()
-    data_commands = {"ledger-summary", "ledger-conflicts", "base-rate", "permitting-summary", "data-quality", "calibration-readiness", "backtest", "calibration", "research-priorities", "project-dossier", "source-watch", "export-training"}
+    data_commands = {"ledger-summary", "ledger-conflicts", "base-rate", "permitting-summary", "data-quality", "calibration-readiness", "backtest", "calibration", "research-priorities", "project-dossier", "source-watch", "export-training", "physical-depth", "model-risk"}
     if args.command in data_commands:
         events = load_event_ledger(args.ledger)
         if args.command == "ledger-summary":
@@ -115,6 +111,10 @@ def main() -> None:
             _dump(walk_forward_interval_calibration(events, milestone_type=args.milestone_type, min_history=args.min_history))
         elif args.command == "research-priorities":
             _dump(research_priorities(events))
+        elif args.command == "physical-depth":
+            _dump(physical_depth_report(events))
+        elif args.command == "model-risk":
+            _dump(model_risk_report(events))
         elif args.command == "project-dossier":
             _dump(project_dossier(events, args.project_id, as_of=args.as_of))
         elif args.command == "source-watch":
