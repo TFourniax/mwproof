@@ -4,9 +4,7 @@ from collections import defaultdict
 from datetime import date
 from typing import Any, Iterable
 
-from .event_ledger import FORECAST_STATUSES, MilestoneObservation, actual_slippage_interval_days, capacity_revisions, detect_source_conflicts, target_revision_days
-
-_AUTHORITATIVE = {"government", "regulator", "grid-operator", "company-filing", "developer-oem-announcement", "developer-release", "developer", "oem"}
+from .event_ledger import AUTHORITATIVE_SOURCE_CLASSES, FORECAST_STATUSES, MilestoneObservation, actual_slippage_interval_days, actual_window, capacity_revisions, detect_source_conflicts, target_revision_days
 
 
 def project_dossier(items: Iterable[MilestoneObservation], project_id: str, *, as_of: str | None = None) -> dict[str, Any]:
@@ -27,15 +25,16 @@ def project_dossier(items: Iterable[MilestoneObservation], project_id: str, *, a
         all_types.update(x.milestone_type for x in group if x.milestone_type)
         forecasts = [x for x in group if x.status in FORECAST_STATUSES and (x.target_start or x.target_end)]
         latest_forecast = sorted(forecasts, key=lambda x: (x.observed_on, x.source_weight))[-1] if forecasts else None
-        actuals = [x for x in group if x.status == "actual" and x.actual_date]
+        actuals = [x for x in group if x.status == "actual" and actual_window(x) is not None]
         latest_actual = sorted(actuals, key=lambda x: x.observed_on)[-1] if actuals else None
-        auth = [x for x in group if x.source_class in _AUTHORITATIVE]
+        latest_bounds = actual_window(latest_actual) if latest_actual else None
+        auth = [x for x in group if x.source_class in AUTHORITATIVE_SOURCE_CLASSES]
         milestones.append({
             "milestone_id": milestone_id,
             "milestone_type": next((x.milestone_type for x in group if x.milestone_type), None),
             "latest_status": group[-1].status,
             "latest_forecast": ({"observed_on": latest_forecast.observed_on, "target_start": latest_forecast.target_start, "target_end": latest_forecast.target_end, "capacity_mw": latest_forecast.capacity_mw, "source_url": latest_forecast.source_url, "source_class": latest_forecast.source_class} if latest_forecast else None),
-            "actual": ({"observed_on": latest_actual.observed_on, "actual_date": latest_actual.actual_date, "precision": latest_actual.precision, "capacity_mw": latest_actual.capacity_mw, "source_url": latest_actual.source_url, "source_class": latest_actual.source_class} if latest_actual else None),
+            "actual": ({"observed_on": latest_actual.observed_on, "actual_date": latest_actual.actual_date, "actual_start": latest_bounds[0].isoformat() if latest_bounds else None, "actual_end": latest_bounds[1].isoformat() if latest_bounds else None, "precision": latest_actual.precision, "capacity_mw": latest_actual.capacity_mw, "source_url": latest_actual.source_url, "source_class": latest_actual.source_class} if latest_actual else None),
             "target_revisions": target_revision_days(rows, project_id, milestone_id),
             "capacity_revisions": capacity_revisions(rows, project_id, milestone_id),
             "slippage_interval_days": actual_slippage_interval_days(rows, project_id, milestone_id),
@@ -57,9 +56,9 @@ def project_dossier(items: Iterable[MilestoneObservation], project_id: str, *, a
 
     return {
         "project": {"id": project_id, "name": next((x.project_name for x in rows if x.project_name), project_id), "operator": next((x.operator for x in rows if x.operator), None), "country": next((x.country for x in rows if x.country), None), "as_of": as_of},
-        "evidence_summary": {"observations": len(rows), "unique_sources": len({x.source_url for x in rows}), "authoritative_or_first_party_observations": sum(1 for x in rows if x.source_class in _AUTHORITATIVE), "source_conflicts": len(conflicts), "missing_physical_milestone_types": missing_physical_types, "stale_unresolved_forecasts": stale_forecasts},
+        "evidence_summary": {"observations": len(rows), "unique_sources": len({x.source_url for x in rows}), "authoritative_or_first_party_observations": sum(1 for x in rows if x.source_class in AUTHORITATIVE_SOURCE_CLASSES), "source_conflicts": len(conflicts), "missing_physical_milestone_types": missing_physical_types, "stale_unresolved_forecasts": stale_forecasts},
         "milestones": milestones,
         "conflicts": conflicts,
-        "timeline": [{"observed_on": x.observed_on, "milestone_id": x.milestone_id, "milestone_type": x.milestone_type, "status": x.status, "target_start": x.target_start, "target_end": x.target_end, "actual_date": x.actual_date, "capacity_mw": x.capacity_mw, "precision": x.precision, "source_class": x.source_class, "source_weight": x.source_weight, "source_url": x.source_url, "source_title": x.source_title, "notes": x.notes} for x in rows],
-        "guardrail": "This dossier is an evidence chronology, not a credit opinion. Missing evidence and stale forecasts remain explicit rather than being imputed as facts.",
+        "timeline": [{"observed_on": x.observed_on, "milestone_id": x.milestone_id, "milestone_type": x.milestone_type, "status": x.status, "target_start": x.target_start, "target_end": x.target_end, "actual_date": x.actual_date, "actual_start": x.actual_start, "actual_end": x.actual_end, "capacity_mw": x.capacity_mw, "precision": x.precision, "source_class": x.source_class, "source_weight": x.source_weight, "source_url": x.source_url, "source_title": x.source_title, "notes": x.notes} for x in rows],
+        "guardrail": "This dossier is an evidence chronology, not a credit opinion. Missing evidence and stale forecasts remain explicit rather than being imputed as facts. Explicit actual bounds represent interval-censored outcomes rather than fake exact CODs.",
     }
