@@ -10,13 +10,17 @@ def calibration_readiness(items: Iterable[MilestoneObservation]) -> dict[str, An
     """Hard gates for claiming a production-calibrated public-data model.
 
     No blended score: failing any critical gate keeps the dataset NOT_READY.
-    Thresholds are deliberately demanding and can be versioned with methodology.
+    Coarse or bounded outcomes are classified conservatively: a case is an
+    on-time control only if its whole slippage interval is <=90 days, and a
+    delayed control only if its whole interval is >90 days. Cases crossing the
+    threshold remain ambiguous instead of being forced into a class by midpoint.
     """
     rows = list(items)
     quality = data_quality_report(rows)
     ops = [p for p in resolved_forecast_pairs(rows) if p.get("milestone_type") == "operations"]
-    early_or_on_time = sum(1 for p in ops if p["slippage_days"] <= 90)
-    materially_delayed = sum(1 for p in ops if p["slippage_days"] > 90)
+    early_or_on_time = sum(1 for p in ops if p["slippage_high_days"] <= 90)
+    materially_delayed = sum(1 for p in ops if p["slippage_low_days"] > 90)
+    ambiguous_controls = len(ops) - early_or_on_time - materially_delayed
     thresholds = {
         "observations": (len(rows), 500),
         "projects": (quality["scope"]["projects"], 100),
@@ -39,5 +43,10 @@ def calibration_readiness(items: Iterable[MilestoneObservation]) -> dict[str, An
         "status": "READY_FOR_CALIBRATION" if not failed else "NOT_READY",
         "gates": gates,
         "failed_gates": failed,
-        "note": "These are minimum data-volume/diversity gates only. Passing them does not prove predictive performance; leakage-free backtests and calibration tests remain mandatory.",
+        "control_labels": {
+            "certainly_early_or_on_time": early_or_on_time,
+            "certainly_materially_delayed": materially_delayed,
+            "interval_ambiguous": ambiguous_controls,
+        },
+        "note": "These are minimum data-volume/diversity gates only. Interval-censored cases crossing the 90-day control threshold are excluded from both classes. Passing all gates still does not prove predictive performance.",
     }
