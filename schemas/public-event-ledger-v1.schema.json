@@ -6,9 +6,56 @@
   "required": ["schema_version", "projects", "sources", "events"],
   "properties": {
     "schema_version": {"const": "1.0"},
-    "projects": {"type": "object", "additionalProperties": {"type": "object", "required": ["name", "operator", "country"], "properties": {"name": {"type": ["string", "null"]}, "operator": {"type": ["string", "null"]}, "country": {"type": ["string", "null"]}}, "additionalProperties": false}},
-    "sources": {"type": "object", "additionalProperties": {"type": "object", "required": ["url", "class", "title"], "properties": {"url": {"type": "string", "pattern": "^https://"}, "class": {"type": "string", "minLength": 1}, "title": {"type": "string"}}, "additionalProperties": false}},
-    "events": {"type": "array", "items": {"type": "object", "required": ["p", "m", "observed", "status", "src"], "properties": {"p": {"type": "string", "minLength": 1}, "m": {"type": "string", "minLength": 1}, "type": {"type": ["string", "null"]}, "observed": {"type": "string", "format": "date"}, "status": {"type": "string", "minLength": 1}, "target_start": {"type": ["string", "null"], "format": "date"}, "target_end": {"type": ["string", "null"], "format": "date"}, "actual": {"type": ["string", "null"], "format": "date"}, "mw": {"type": ["number", "null"], "minimum": 0}, "src": {"type": "string", "minLength": 1}, "precision": {"enum": ["day", "month", "quarter", "half-year", "year"]}, "notes": {"type": "string"}}, "additionalProperties": false}}
+    "projects": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "operator", "country"],
+        "properties": {
+          "name": {"type": ["string", "null"]},
+          "operator": {"type": ["string", "null"]},
+          "country": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["url", "class", "title"],
+        "properties": {
+          "url": {"type": "string", "pattern": "^https://"},
+          "class": {"type": "string", "minLength": 1},
+          "title": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["p", "m", "observed", "status", "src"],
+        "properties": {
+          "p": {"type": "string", "minLength": 1},
+          "m": {"type": "string", "minLength": 1},
+          "type": {"type": ["string", "null"]},
+          "observed": {"type": "string", "format": "date"},
+          "status": {"type": "string", "minLength": 1},
+          "target_start": {"type": ["string", "null"], "format": "date"},
+          "target_end": {"type": ["string", "null"], "format": "date"},
+          "actual": {"type": ["string", "null"], "format": "date"},
+          "actual_start": {"type": ["string", "null"], "format": "date"},
+          "actual_end": {"type": ["string", "null"], "format": "date"},
+          "mw": {"type": ["number", "null"], "minimum": 0},
+          "src": {"type": "string", "minLength": 1},
+          "precision": {"enum": ["day", "month", "quarter", "half-year", "year"]},
+          "notes": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    }
   },
   "additionalProperties": false
 }
