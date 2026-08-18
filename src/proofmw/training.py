@@ -11,8 +11,8 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
     """Build leakage-aware supervised examples from event histories.
 
     Features contain only information observable at each forecast date. Labels may
-    use later outcomes. Coarse actual dates are exported as an interval plus midpoint,
-    never as a fake exact raw anchor.
+    use later outcomes. Actuals are exported as explicit intervals whenever the
+    public evidence only bounds the physical completion date.
     """
     grouped: dict[tuple[str, str], list[MilestoneObservation]] = defaultdict(list)
     for item in items:
@@ -21,7 +21,7 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
     output: list[dict[str, Any]] = []
     for (project_id, milestone_id), rows in grouped.items():
         ordered = sorted(rows, key=lambda x: (x.observed_on, x.event_id))
-        future_actual = next((x for x in reversed(ordered) if x.status == "actual" and x.actual_date), None)
+        future_actual = next((x for x in reversed(ordered) if x.status == "actual" and actual_window(x) is not None), None)
         future_negative = next((x for x in ordered if x.status in TERMINAL_NEGATIVE), None)
         prior_forecasts = 0
         for observation in ordered:
@@ -39,7 +39,7 @@ def build_training_rows(items: Iterable[MilestoneObservation]) -> list[dict[str,
             slippage = None
             slippage_low = None
             slippage_high = None
-            if future_actual and future_actual.actual_date and date.fromisoformat(future_actual.observed_on) > observed:
+            if future_actual and date.fromisoformat(future_actual.observed_on) > observed:
                 bounds = actual_window(future_actual)
                 if bounds is not None:
                     actual_mid = bounds[0] + (bounds[1] - bounds[0]) / 2
@@ -93,7 +93,7 @@ def build_hazard_rows(items: Iterable[MilestoneObservation]) -> list[dict[str, A
     """Create as-of rows for permitting/development survival models.
 
     Resolution availability is based on the date the resolution evidence became
-    observable, while physical actual_date remains available as a separate label.
+    observable, while physical actual intervals remain separate labels.
     """
     grouped: dict[tuple[str, str], list[MilestoneObservation]] = defaultdict(list)
     for item in items:
@@ -106,12 +106,13 @@ def build_hazard_rows(items: Iterable[MilestoneObservation]) -> list[dict[str, A
         for idx, observation in enumerate(ordered):
             future = ordered[idx + 1 :]
             terminal = next((x for x in future if x.status in TERMINAL_NEGATIVE), None)
-            positive = next((x for x in future if x.status == "actual" and x.actual_date), None)
+            positive = next((x for x in future if x.status == "actual" and actual_window(x) is not None), None)
             resolution = terminal or positive
             days_to_resolution = None
             if resolution is not None:
                 resolution_date = date.fromisoformat(resolution.observed_on)
                 days_to_resolution = (resolution_date - date.fromisoformat(observation.observed_on)).days
+            bounds = actual_window(positive) if positive else None
             output.append({
                 "example_id": f"hazard:{project_id}:{milestone_id}:{observation.event_id}",
                 "features": {
@@ -131,6 +132,8 @@ def build_hazard_rows(items: Iterable[MilestoneObservation]) -> list[dict[str, A
                     "positive_resolution_after_observation": positive is not None and terminal is None,
                     "resolution_evidence_observed_on": resolution.observed_on if resolution else None,
                     "physical_actual_date": positive.actual_date if positive else None,
+                    "physical_actual_start": bounds[0].isoformat() if bounds else None,
+                    "physical_actual_end": bounds[1].isoformat() if bounds else None,
                     "days_to_resolution": days_to_resolution,
                 },
             })
