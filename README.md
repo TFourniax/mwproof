@@ -172,7 +172,7 @@ The empirical layer follows a strict promotion sequence:
 6. validate against private ground truth where possible;
 7. publish a confidence level only when independent model-risk gates pass.
 
-The conditional model is a **challenger benchmark**, not a production predictor. See [`docs/MODEL_CARD_V0.5.md`](docs/MODEL_CARD_V0.5.md); V0.6 changes the evidence/label contract, not the basic challenger estimator.
+The conditional model is a **challenger benchmark**, not a production predictor. See [`docs/MODEL_CARD_V0.6.md`](docs/MODEL_CARD_V0.6.md).
 
 ## Repository layout
 
