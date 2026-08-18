@@ -63,6 +63,6 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
         "source_conflicts": len(conflicts),
         "projects": project_rows,
         "interpretation": (
-            "This report measures structural coverage/provenance only. Confirmed actual states with no defensible physical date are retained as facts but excluded from temporal scoring. Explicit actual bounds preserve interval-censored outcomes instead of inventing exact completion dates."
+            "This report measures structural coverage/provenance only and does not convert source classes or completeness into a probability of project success. Confirmed actual states with no defensible physical date are retained as facts but excluded from temporal scoring. Explicit actual bounds preserve interval-censored outcomes instead of inventing exact completion dates."
         ),
     }
