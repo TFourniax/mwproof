@@ -1,0 +1,19 @@
+{
+  "methodology": "ProofMW Monte Carlo v0.1",
+  "project": {"id": "start-campus-sin02-public-v0", "name": "Start Campus SIN02 — public-information underwriting demo", "nameplate_mw": 200.0},
+  "request": {"simulations": 20000, "seed": 42, "quantiles": [0.5, 0.9, 0.95, 0.99], "overrides": []},
+  "delivery_date": {"COD@50": "2028-04-22", "COD@90": "2028-07-22", "COD@95": "2028-08-17", "COD@99": "2028-09-29"},
+  "delivery_critical_path_frequency": [
+    {"gate_id": "construction", "frequency": 0.4086},
+    {"gate_id": "cooling", "frequency": 0.2867},
+    {"gate_id": "grid", "frequency": 0.26765},
+    {"gate_id": "network", "frequency": 0.0368},
+    {"gate_id": "permits", "frequency": 0.00025}
+  ],
+  "results": {
+    "2027-12-31": {"capacity": {"MW@50": 0.0, "MW@90": 0.0, "MW@95": 0.0, "MW@99": 0.0}, "expected_mw": 5.85, "probability_any_power": 0.03085, "probability_full_nameplate": 0.0, "critical_path_frequency": [{"gate_id": "grid", "frequency": 0.62295}, {"gate_id": "construction", "frequency": 0.28265}, {"gate_id": "cooling", "frequency": 0.0828}, {"gate_id": "network", "frequency": 0.0104}, {"gate_id": "permits", "frequency": 0.0012}]},
+    "2028-03-31": {"capacity": {"MW@50": 0.0, "MW@90": 0.0, "MW@95": 0.0, "MW@99": 0.0}, "expected_mw": 71.813, "probability_any_power": 0.379, "probability_full_nameplate": 0.0, "critical_path_frequency": [{"gate_id": "construction", "frequency": 0.47245}, {"gate_id": "grid", "frequency": 0.3319}, {"gate_id": "cooling", "frequency": 0.19475}, {"gate_id": "network", "frequency": 0.0009}]},
+    "2028-06-30": {"capacity": {"MW@50": 188.726, "MW@90": 0.0, "MW@95": 0.0, "MW@99": 0.0}, "expected_mw": 157.96, "probability_any_power": 0.83415, "probability_full_nameplate": 0.0, "critical_path_frequency": [{"gate_id": "construction", "frequency": 0.57225}, {"gate_id": "grid", "frequency": 0.23105}, {"gate_id": "cooling", "frequency": 0.1967}]},
+    "2028-12-31": {"capacity": {"MW@50": 189.922, "MW@90": 183.317, "MW@95": 181.056, "MW@99": 178.267}, "expected_mw": 189.484, "probability_any_power": 1.0, "probability_full_nameplate": 0.0, "critical_path_frequency": [{"gate_id": "construction", "frequency": 0.5462}, {"gate_id": "grid", "frequency": 0.2338}, {"gate_id": "cooling", "frequency": 0.22}]}
+  }
+}

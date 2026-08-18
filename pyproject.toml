@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proofmw"
+version = "0.1.0"
+description = "Evidence-backed probabilistic underwriting for AI infrastructure"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+api = ["fastapi>=0.116", "uvicorn>=0.35", "pydantic>=2.11"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+proofmw = "proofmw.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
