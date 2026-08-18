@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from typing import Any, Iterable
 
-from .event_ledger import MilestoneObservation, detect_source_conflicts
+from .event_ledger import AUTHORITATIVE_SOURCE_CLASSES, MilestoneObservation, detect_source_conflicts
 
 
 def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]:
@@ -24,6 +24,7 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
         missing_country = sum(1 for x in project_events if not x.country)
         missing_operator = sum(1 for x in project_events if not x.operator)
         coarse_precision = sum(1 for x in project_events if x.precision in {"year", "half", "half-year", "quarter", "month"})
+        bounded_actual = sum(1 for x in project_events if x.actual_start and x.actual_end)
         project_rows.append({
             "project_id": project_id,
             "project_name": next((x.project_name for x in project_events if x.project_name), None),
@@ -36,12 +37,13 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
             "missing_country_rows": missing_country,
             "missing_operator_rows": missing_operator,
             "coarse_precision_rows": coarse_precision,
+            "bounded_actual_rows": bounded_actual,
         })
 
     source_class_counts = Counter(x.source_class for x in rows)
     precision_counts = Counter(x.precision for x in rows)
     unique_sources = {x.source_url for x in rows}
-    authoritative = sum(1 for x in rows if x.source_class in {"government", "regulator", "grid-operator", "company-filing", "developer-oem-announcement", "developer-release", "developer", "oem"})
+    authoritative = sum(1 for x in rows if x.source_class in AUTHORITATIVE_SOURCE_CLASSES)
     project_operators = {project_id: next((x.operator for x in events if x.operator), None) for project_id, events in by_project.items()}
     operator_project_counts = Counter(x for x in project_operators.values() if x)
     largest_operator_count = max(operator_project_counts.values(), default=0)
@@ -58,6 +60,9 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
             "source_class_counts": dict(sorted(source_class_counts.items())),
             "authoritative_or_first_party_ratio": round(authoritative / len(rows), 4) if rows else 0.0,
         },
+        "temporal_precision": {
+            "bounded_actual_observations": sum(1 for x in rows if x.actual_start and x.actual_end),
+        },
         "concentration": {
             "operator_project_counts": dict(sorted(operator_project_counts.items())),
             "largest_operator_project_share": round(largest_operator_share, 4),
@@ -67,6 +72,7 @@ def data_quality_report(items: Iterable[MilestoneObservation]) -> dict[str, Any]
         "projects": project_rows,
         "interpretation": (
             "This report measures structural coverage/provenance only. It deliberately does not convert source classes "
-            "or completeness into a probability of project success."
+            "or completeness into a probability of project success. Explicit actual bounds preserve interval-censored "
+            "outcomes instead of inventing exact completion dates."
         ),
     }
