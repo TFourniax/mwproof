@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+import os
 from pathlib import Path
 
 from .calibration import walk_forward_interval_calibration
@@ -26,7 +27,31 @@ except ImportError as exc:
 
 VERSION = "0.5.0"
 app = FastAPI(title="ProofMW API", version=VERSION)
-ROOT = Path(__file__).resolve().parents[2]
+
+
+def _discover_root() -> Path:
+    """Locate runtime assets in source checkouts and packaged/container installs."""
+    candidates: list[Path] = []
+    configured = os.getenv("PROOFMW_ROOT")
+    if configured:
+        candidates.append(Path(configured))
+    candidates.extend([Path.cwd(), Path(__file__).resolve().parents[2]])
+    seen: set[Path] = set()
+    for candidate in candidates:
+        root = candidate.resolve()
+        if root in seen:
+            continue
+        seen.add(root)
+        if (root / "data" / "europe-public-events-v2").is_dir() and (root / "web" / "index.html").is_file():
+            return root
+    searched = ", ".join(str(x.resolve()) for x in candidates)
+    raise RuntimeError(
+        "ProofMW runtime assets not found. Set PROOFMW_ROOT to a directory "
+        f"containing data/, fixtures/ and web/. Searched: {searched}"
+    )
+
+
+ROOT = _discover_root()
 DEMO = ROOT / "fixtures" / "start-campus-sin02-public" / "project.json"
 PUBLIC_LEDGER = ROOT / "data" / "europe-public-events-v2"
 WEB_INDEX = ROOT / "web" / "index.html"
@@ -166,8 +191,7 @@ def search_events(
     }
     for field, value in filters.items():
         if value is not None:
-            attr = "project_id" if field == "project_id" else field
-            rows = [x for x in rows if getattr(x, attr) == value]
+            rows = [x for x in rows if getattr(x, field) == value]
     if as_of is not None:
         rows = [x for x in rows if x.observed_on <= as_of]
     rows.sort(key=lambda x: (x.observed_on, x.event_id), reverse=True)
