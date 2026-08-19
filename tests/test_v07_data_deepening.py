@@ -116,6 +116,6 @@ def test_readiness_and_research_priorities_share_interval_conservative_controls(
     readiness = calibration_readiness(events)
     priorities = research_priorities(events)
     controls = readiness["control_labels"]
-    assert priorities["current"]["early_or_on_time_controls"] == controls["certainly_early_or_on_time"]
-    assert priorities["current"]["materially_delayed_controls"] == controls["certainly_materially_delayed"]
+    assert priorities["current"]["certainly_early_or_on_time_controls"] == controls["certainly_early_or_on_time"]
+    assert priorities["current"]["certainly_materially_delayed_controls"] == controls["certainly_materially_delayed"]
     assert priorities["current"]["interval_ambiguous_controls"] == controls["interval_ambiguous"]
