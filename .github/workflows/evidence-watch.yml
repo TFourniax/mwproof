@@ -1,0 +1,33 @@
+name: evidence-watch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build package
+        run: python -m pip install -e .
+      - name: Snapshot authoritative public sources
+        run: |
+          mkdir -p artifacts
+          proofmw source-watch data/europe-public-events-v2 \
+            --limit 75 \
+            --timeout 15 \
+            --output artifacts/evidence-watch.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: proofmw-evidence-watch
+          path: artifacts/evidence-watch.json
+          if-no-files-found: warn

@@ -1,0 +1,177 @@
+{
+  "id": "start-campus-sin02-public-v0",
+  "name": "Start Campus SIN02 — public-information underwriting demo",
+  "location": "Sines, Portugal",
+  "nameplate_mw": 200,
+  "currency": "EUR",
+  "metadata": {
+    "case_type": "public-information demo",
+    "warning": "This is not a credit opinion on Start Campus. Public facts are combined with clearly labelled synthetic uncertainty assumptions solely to exercise the ProofMW engine.",
+    "public_project": "SIN02",
+    "campus": "SINES Data Campus"
+  },
+  "evidence": [
+    {
+      "id": "ev-startcampus-sin02",
+      "title": "Start Campus — Building Europe's AI Future from the Atlantic Coast",
+      "source_url": "https://blog.startcampus.pt/building-europes-ai-future-from-the-atlantic-coast",
+      "kind": "public",
+      "observed_on": "2026-08-18",
+      "excerpt": "The SIN02 200MW Data Centre – Coming online by H2 2027.",
+      "claim": "SIN02 is publicly described as a 200 MW data centre targeted to come online in H2 2027."
+    },
+    {
+      "id": "ev-startcampus-campus",
+      "title": "Start Campus — Sines Data Campus",
+      "source_url": "https://www.startcampus.pt/sines",
+      "kind": "public",
+      "observed_on": "2026-08-18",
+      "excerpt": "1.2GW total campus capacity; 200 MW next planned facility.",
+      "claim": "Start Campus publicly states 1.2 GW total campus capacity and identifies SIN02 as the next 200 MW facility."
+    },
+    {
+      "id": "ev-ocp-sin02",
+      "title": "Open Compute Project — Start Campus SIN02",
+      "source_url": "https://www.opencompute.org/facilities/74/start-campus-sines-12gw-data-campus-sin02",
+      "kind": "public",
+      "observed_on": "2026-08-18",
+      "excerpt": "SIN02 is described as ready-to-build/de-risked, high-density AI/Cloud/HPC capable, with ocean-water cooling and renewable power access.",
+      "claim": "OCP lists SIN02 and records public design/site-readiness claims relevant to physical bankability."
+    },
+    {
+      "id": "ev-grid-public",
+      "title": "Start Campus — power allocation announcement",
+      "source_url": "https://www.startcampus.pt/press_release_august_2024_1gw",
+      "kind": "public",
+      "observed_on": "2026-08-18",
+      "excerpt": "Additional power secured ... total IT capacity secured for SINES DC to 1.2 GW.",
+      "claim": "The developer publicly states that grid power for the 1.2 GW campus has been secured."
+    },
+    {
+      "id": "ev-apa-recpae",
+      "title": "Agência Portuguesa do Ambiente — RECAPE Data Center Sines 4.0 notice",
+      "source_url": "https://apambiente.pt/en/node/2036",
+      "kind": "public",
+      "observed_on": "2026-08-18",
+      "excerpt": "RECAPE do Projeto de Execução Data Center Sines 4.0",
+      "claim": "Portuguese environmental authority records show a RECAPE process for Data Center Sines 4.0."
+    },
+    {
+      "id": "assumption-grid",
+      "title": "Synthetic uncertainty assumption — grid energisation",
+      "source_url": "proofmw://assumption/grid-v0",
+      "kind": "synthetic",
+      "observed_on": "2026-08-18",
+      "excerpt": "Delay and derating distributions are hypothetical because the underlying interconnection agreement and energisation schedule are not public in this demo.",
+      "claim": "Use a bounded triangular schedule-risk distribution for grid energisation until private evidence is supplied."
+    },
+    {
+      "id": "assumption-construction",
+      "title": "Synthetic uncertainty assumption — construction",
+      "source_url": "proofmw://assumption/construction-v0",
+      "kind": "synthetic",
+      "observed_on": "2026-08-18",
+      "excerpt": "Construction schedule distribution is hypothetical and intentionally conservative for product testing.",
+      "claim": "Use a bounded triangular construction-delay distribution pending EPC schedule evidence."
+    },
+    {
+      "id": "assumption-cooling",
+      "title": "Synthetic uncertainty assumption — cooling commissioning",
+      "source_url": "proofmw://assumption/cooling-v0",
+      "kind": "synthetic",
+      "observed_on": "2026-08-18",
+      "excerpt": "Cooling commissioning distribution is hypothetical pending detailed design and commissioning records.",
+      "claim": "Apply a bounded cooling commissioning and initial derating distribution."
+    },
+    {
+      "id": "assumption-network",
+      "title": "Synthetic uncertainty assumption — network readiness",
+      "source_url": "proofmw://assumption/network-v0",
+      "kind": "synthetic",
+      "observed_on": "2026-08-18",
+      "excerpt": "Network readiness distribution is hypothetical pending carrier contracts and route diversity documentation.",
+      "claim": "Apply a modest network readiness delay distribution."
+    }
+  ],
+  "gates": [
+    {
+      "id": "grid",
+      "name": "Grid power energised",
+      "category": "power",
+      "max_mw": 200,
+      "target_date": "2027-12-31",
+      "delay_days": {"kind": "triangular", "low": -150, "mode": -45, "high": 210},
+      "derate_fraction": {"kind": "triangular", "low": 0.0, "mode": 0.0, "high": 0.08},
+      "depends_on": [],
+      "evidence_ids": ["ev-grid-public", "ev-startcampus-sin02", "assumption-grid"],
+      "notes": "Public campus power claim is evidence; distribution is synthetic pending interconnection documents.",
+      "factor_loadings": {"supply_chain": 0.7, "regulatory": 0.2}
+    },
+    {
+      "id": "permits",
+      "name": "Environmental/permitting path available",
+      "category": "permitting",
+      "max_mw": 200,
+      "target_date": "2027-06-30",
+      "delay_days": {"kind": "triangular", "low": -120, "mode": -45, "high": 150},
+      "derate_fraction": {"kind": "fixed", "low": 0.0, "mode": 0.0, "high": 0.0},
+      "depends_on": [],
+      "evidence_ids": ["ev-apa-recpae", "ev-ocp-sin02", "assumption-construction"],
+      "notes": "A public RECAPE record exists; exact permit status for every SIN02 dependency should be verified in private due diligence.",
+      "factor_loadings": {"regulatory": 1.0}
+    },
+    {
+      "id": "construction",
+      "name": "Data halls and electrical distribution commissioned",
+      "category": "construction",
+      "max_mw": 200,
+      "target_date": "2027-12-31",
+      "delay_days": {"kind": "triangular", "low": -150, "mode": -30, "high": 270},
+      "derate_fraction": {"kind": "triangular", "low": 0.0, "mode": 0.01, "high": 0.12},
+      "depends_on": ["permits"],
+      "evidence_ids": ["ev-startcampus-sin02", "ev-ocp-sin02", "assumption-construction"],
+      "notes": "Synthetic schedule dispersion around the public H2 2027 target.",
+      "factor_loadings": {"supply_chain": 0.5, "regulatory": 0.6}
+    },
+    {
+      "id": "cooling",
+      "name": "Cooling capacity commissioned",
+      "category": "cooling",
+      "max_mw": 200,
+      "target_date": "2027-12-31",
+      "delay_days": {"kind": "triangular", "low": -120, "mode": -20, "high": 180},
+      "derate_fraction": {"kind": "triangular", "low": 0.0, "mode": 0.01, "high": 0.07},
+      "depends_on": ["construction"],
+      "evidence_ids": ["ev-ocp-sin02", "assumption-cooling"],
+      "notes": "OCP supports the design claim; commissioning uncertainty is synthetic.",
+      "factor_loadings": {"supply_chain": 0.8, "regulatory": 0.2}
+    },
+    {
+      "id": "network",
+      "name": "Carrier/network readiness",
+      "category": "network",
+      "max_mw": 200,
+      "target_date": "2027-11-30",
+      "delay_days": {"kind": "triangular", "low": -120, "mode": -30, "high": 120},
+      "derate_fraction": {"kind": "fixed", "low": 0.0, "mode": 0.0, "high": 0.0},
+      "depends_on": ["construction"],
+      "evidence_ids": ["ev-startcampus-campus", "ev-ocp-sin02", "assumption-network"],
+      "notes": "Public connectivity claims are not a substitute for carrier contracts.",
+      "factor_loadings": {"supply_chain": 0.25, "regulatory": 0.1}
+    }
+  ],
+  "risk_factors": [
+    {
+      "id": "supply_chain",
+      "name": "Shared equipment / supply-chain schedule shock",
+      "delay_days": {"kind": "triangular", "low": -20, "mode": 0, "high": 120},
+      "notes": "Synthetic common-factor shock pending vendor benchmark calibration."
+    },
+    {
+      "id": "regulatory",
+      "name": "Shared regulatory / permitting schedule shock",
+      "delay_days": {"kind": "triangular", "low": -15, "mode": 0, "high": 90},
+      "notes": "Synthetic common-factor shock pending jurisdiction-specific calibration."
+    }
+  ]
+}

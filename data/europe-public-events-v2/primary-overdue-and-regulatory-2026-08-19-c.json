@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "cohort": "primary-overdue-and-regulatory-2026-08-19-c",
+  "projects": {
+    "colt-fra3": {"name":"Colt Frankfurt 3","operator":"Colt Data Centre Services","country":"Germany"},
+    "vantage-lhr1": {"name":"Vantage London I (LHR1)","operator":"Vantage Data Centers","country":"United Kingdom"},
+    "atnorth-fin04": {"name":"atNorth FIN04 Myllykoski","operator":"atNorth","country":"Finland"},
+    "sesterce-alixan": {"name":"Sesterce AI Computer Center Alixan","operator":"Sesterce Group","country":"France"},
+    "le-bourget-datacenter": {"name":"Le Bourget Data Center","operator":null,"country":"France"}
+  },
+  "sources": {
+    "colt-fra3-current": {"url":"https://www.coltdatacentres.net/en-GB/our-locations/data-centre-locations-europe/frankfurt-three","class":"developer","title":"Colt Frankfurt 3 current facility page"},
+    "vantage-lhr1-current": {"url":"https://vantage-dc.com/data-center-locations/emea/london-i-united-kingdom/","class":"developer","title":"Vantage LHR1 current campus page"},
+    "atnorth-fin04-yle-oct15": {"url":"https://www.atnorth.com/in-the-news/mega-site-in-kouvola-supporting-local-community/","class":"developer","title":"atNorth republication of YLE October 15 FIN04 schedule update"},
+    "atnorth-fin04-current": {"url":"https://www.atnorth.com/nordic-data-centers/finland-data-centers/myllykoski-mega-site/","class":"developer","title":"atNorth FIN04 current campus page"},
+    "alixan-court": {"url":"https://grenoble.tribunal-administratif.fr/decisions-de-justice/dernieres-decisions/suspension-du-projet-de-datacenter-a-alixan","class":"government","title":"Tribunal administratif de Grenoble suspends Alixan AI computer center permit"},
+    "le-bourget-court": {"url":"https://montreuil.tribunal-administratif.fr/qui-sommes-nous/vie-du-tribunal/data-center-du-bourget-pas-de-suspension-du-retrait-du-permis-de-construire-delivre-pour-sa-realisation","class":"government","title":"Tribunal administratif de Montreuil upholds effect of Le Bourget permit withdrawal"}
+  },
+  "events": [
+    {"p":"colt-fra3","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"colt-fra3-current","precision":"day","mw":32.4,"notes":"Current first-party page says the first phase is still being constructed, after the historical phase-one 2025 delivery target. No substitute opening date is inferred."},
+    {"p":"colt-fra3","m":"construction-current","type":"construction","observed":"2026-08-19","status":"in_progress","src":"colt-fra3-current","precision":"day","mw":32.4,"notes":"Colt states it is currently building the first phase. This is current construction-state evidence, not a completed construction milestone."},
+
+    {"p":"vantage-lhr1","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"vantage-lhr1-current","precision":"day","mw":55,"notes":"Current official page remains future-tense ('once fully built' / 'will feature') after the historical operating target retained elsewhere in the ledger. Recorded as delayed/unresolved, not as an inferred actual."},
+    {"p":"vantage-lhr1","m":"power-design-current","type":"power","observed":"2026-08-19","status":"design","src":"vantage-lhr1-current","precision":"day","mw":55,"notes":"Current page specifies a 110MVA HV substation with 80MVA dedicated to LHR1 and National Grid supply. MVA is not converted to MW; design evidence is not energisation evidence."},
+    {"p":"vantage-lhr1","m":"cooling-design-current","type":"cooling","observed":"2026-08-19","status":"design","src":"vantage-lhr1-current","precision":"day","mw":55,"notes":"Current page specifies closed-loop chilled water, air-cooled chillers and economizers. Design evidence only."},
+    {"p":"vantage-lhr1","m":"network-design-current","type":"network","observed":"2026-08-19","status":"design","src":"vantage-lhr1-current","precision":"day","mw":55,"notes":"Current page specifies diverse fiber paths, MMRs and four points of entry. Design evidence only, not proof of completed network delivery."},
+
+    {"p":"atnorth-fin04","m":"operations","type":"operations","observed":"2025-10-15","status":"revised_forecast","src":"atnorth-fin04-yle-oct15","precision":"year","target_start":"2026-10-01","target_end":"2027-03-31","mw":null,"notes":"atNorth's republication states the first Kouvola data center is expected to start around the turn of 2026–2027. The six-month window preserves the wording without inventing a day."},
+    {"p":"atnorth-fin04","m":"operations","type":"operations","observed":"2026-08-19","status":"delayed","src":"atnorth-fin04-current","precision":"day","mw":430,"notes":"The current atNorth page still says ready for operation in H1 2026 even though that interval has passed. This is recorded as a stale/current schedule conflict and delayed state, not an actual opening. 430MW is campus power capacity, not asserted live IT load."},
+
+    {"p":"sesterce-alixan","m":"building-permit","type":"permitting","observed":"2026-07-10","status":"actual","src":"alixan-court","precision":"day","actual":"2025-12-18","mw":null,"notes":"Retrospective court evidence: the mayor of Alixan granted Sesterce Group a building permit on 18 Dec 2025. Evidence becomes available to ProofMW on the court publication date. Court states ultimate electrical requirement exceeds 60MW; no exact MW is inferred."},
+    {"p":"sesterce-alixan","m":"building-permit","type":"permitting","observed":"2026-07-10","status":"suspended","src":"alixan-court","precision":"day","mw":null,"notes":"Administrative court suspended execution of the permit pending the annulment case, citing missing environmental impact assessment and serious urban-planning doubts. Suspension is not encoded as terminal cancellation."},
+
+    {"p":"le-bourget-datacenter","m":"building-permit","type":"permitting","observed":"2026-07-28","status":"actual","src":"le-bourget-court","precision":"day","actual":"2026-03-13","mw":null,"notes":"Retrospective court evidence: Le Bourget mayor issued the data-center building permit on 13 Mar 2026. Beneficiary name/capacity is not stated in the court communication and is not inferred."},
+    {"p":"le-bourget-datacenter","m":"building-permit","type":"permitting","observed":"2026-07-28","status":"withdrawn","src":"le-bourget-court","precision":"day","mw":null,"notes":"The permit was withdrawn by mayoral order on 12 Jun 2026; on 28 Jul 2026 the administrative court refused to suspend the withdrawal, finding the project non-compliant with height rules. `withdrawn` is a terminal-negative permitting event in the current public record, not a claim that no redesigned project could ever return."}
+  ]
+}

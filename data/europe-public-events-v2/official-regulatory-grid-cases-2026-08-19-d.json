@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "cohort": "official-regulatory-grid-cases-2026-08-19-d",
+  "projects": {
+    "abbots-langley-data-centre-23-1068-out": {"name":"Abbots Langley Data Centre 23/1068/OUT","operator":null,"country":"United Kingdom"},
+    "northc-oude-meer-grid-capacity": {"name":"NorthC Oude Meer Transport Capacity Case","operator":"NorthC Datacenters","country":"Netherlands"},
+    "bact-de-kwakel-datacenter": {"name":"BACT De Kwakel Data Center","operator":"BACT B.V.","country":"Netherlands"}
+  },
+  "sources": {
+    "three-rivers-refusal": {"url":"https://moderngov.threerivers.gov.uk/ieIssueDetails.aspx?IId=4906&Opt=3","class":"government","title":"Three Rivers Planning Committee refusal of 23/1068/OUT"},
+    "northc-grid-judgment": {"url":"https://uitspraken.rechtspraak.nl/details?id=ECLI%3ANL%3ACBB%3A2026%3A282","class":"government","title":"Dutch business appeals court decision on NorthC transport-capacity increase"},
+    "bact-permit-judgment": {"url":"https://uitspraken.rechtspraak.nl/details?id=ECLI%3ANL%3ARVS%3A2026%3A4455","class":"government","title":"Dutch Council of State decision on BACT De Kwakel data-center permit"}
+  },
+  "events": [
+    {"p":"abbots-langley-data-centre-23-1068-out","m":"outline-planning-permission","type":"permitting","observed":"2024-01-18","status":"denied","src":"three-rivers-refusal","precision":"day","mw":null,"notes":"Three Rivers Planning Committee unanimously resolved to refuse outline application 23/1068/OUT for a data centre up to 84,000 sqm across two buildings. Refusal reasons included Green Belt openness/scale and unresolved sustainable-travel contribution requirements. No electrical MW is stated and none is inferred."},
+
+    {"p":"northc-oude-meer-grid-capacity","m":"transport-capacity-increase","type":"power","observed":"2026-06-23","status":"capacity_increase_denied","src":"northc-grid-judgment","precision":"day","mw":null,"notes":"Dutch administrative business court held Liander could refuse NorthC's request for a higher contracted electricity transport capacity where congestion exists. This is a power-capacity constraint outcome, not encoded as terminal project cancellation."},
+
+    {"p":"bact-de-kwakel-datacenter","m":"environmental-building-permit","type":"permitting","observed":"2026-08-05","status":"actual","src":"bact-permit-judgment","precision":"day","actual":"2023-02-06","mw":null,"notes":"Council of State confirmed the lower court's 6 Feb 2023 ruling that BACT had obtained a building environmental permit by operation of law and that the municipality had to publish it. `actual` here is the permitting-resolution milestone, not physical construction or operations. Final appellate confirmation was published 5 Aug 2026. Installed motor power discussed in the judgment remains below 15MW but is not treated as IT capacity."}
+  ]
+}
