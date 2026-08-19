@@ -7,6 +7,8 @@ sys.path.insert(0, str(ROOT / "src"))
 from proofmw.dataset_snapshot import dataset_snapshot
 from proofmw.event_ledger import actual_slippage_interval_days, load_event_ledger, timeline
 from proofmw.physical_depth import physical_depth_report
+from proofmw.readiness import calibration_readiness
+from proofmw.research_priority import research_priorities
 
 LEDGER = ROOT / "data" / "europe-public-events-v2"
 
@@ -14,9 +16,11 @@ LEDGER = ROOT / "data" / "europe-public-events-v2"
 def test_deepening_layer_materially_expands_corpus():
     events = load_event_ledger(LEDGER)
     snap = dataset_snapshot(events, as_of="2026-08-19")
-    assert snap["scope"]["observations"] >= 238
-    assert snap["scope"]["unique_sources"] >= 135
+    assert snap["scope"]["observations"] >= 250
+    assert snap["scope"]["projects"] >= 84
+    assert snap["scope"]["unique_sources"] >= 140
     assert snap["scope"]["resolved_operations"] >= 33
+    assert snap["labels"]["terminal_negative_events"] >= 4
 
 
 def test_md5_is_now_a_real_scorable_resolved_operation():
@@ -69,12 +73,49 @@ def test_physical_report_exposes_evidence_and_completion_as_separate_metrics():
     report = physical_depth_report(events)
     assert report["projects_with_any_physical_evidence"] >= report["projects_with_any_completed_physical_type"]
     assert report["fully_mapped_projects"] >= report["fully_completed_physical_projects"]
-    assert "separate" in report["interpretation"].lower()
+    assert "does not mean" in report["interpretation"].lower()
+    assert "completed coverage" in report["interpretation"].lower()
 
 
 def test_overdue_followups_preserve_unresolved_delays_instead_of_fake_actuals():
     events = load_event_ledger(LEDGER)
-    for project_id in ("vantage-lhr2", "vantage-zrh2", "virtus-saunderton", "data4-hanau", "cyrusone-fra7"):
+    for project_id in (
+        "vantage-lhr1", "vantage-lhr2", "vantage-zrh2", "virtus-saunderton",
+        "data4-hanau", "cyrusone-fra7", "colt-fra3",
+    ):
         rows = timeline(events, project_id, "operations")
         assert any(x.status == "delayed" for x in rows)
         assert not any(x.status == "actual" and x.actual_date == "2026-08-19" for x in rows)
+
+
+def test_fin04_preserves_multiple_schedule_revisions_and_remains_unresolved():
+    events = load_event_ledger(LEDGER)
+    rows = timeline(events, "atnorth-fin04", "operations")
+    assert any(x.status == "revised_forecast" and x.observed_on == "2025-10-15" for x in rows)
+    revision = next(x for x in rows if x.status == "revised_forecast" and x.observed_on == "2025-10-15")
+    assert revision.target_start == "2026-10-01"
+    assert revision.target_end == "2027-03-31"
+    assert any(x.status == "delayed" and x.observed_on == "2026-08-19" for x in rows)
+    assert not any(x.status == "actual" for x in rows)
+
+
+def test_regulatory_failure_paths_distinguish_suspension_from_terminal_withdrawal():
+    events = load_event_ledger(LEDGER)
+    alixan = timeline(events, "sesterce-alixan", "building-permit")
+    assert any(x.status == "actual" and x.actual_date == "2025-12-18" for x in alixan)
+    assert any(x.status == "suspended" for x in alixan)
+    assert not any(x.status in {"withdrawn", "denied", "canceled"} for x in alixan)
+
+    bourget = timeline(events, "le-bourget-datacenter", "building-permit")
+    assert any(x.status == "actual" and x.actual_date == "2026-03-13" for x in bourget)
+    assert any(x.status == "withdrawn" for x in bourget)
+
+
+def test_readiness_and_research_priorities_share_interval_conservative_controls():
+    events = load_event_ledger(LEDGER)
+    readiness = calibration_readiness(events)
+    priorities = research_priorities(events)
+    controls = readiness["control_labels"]
+    assert priorities["current"]["early_or_on_time_controls"] == controls["certainly_early_or_on_time"]
+    assert priorities["current"]["materially_delayed_controls"] == controls["certainly_materially_delayed"]
+    assert priorities["current"]["interval_ambiguous_controls"] == controls["interval_ambiguous"]
