@@ -4,7 +4,7 @@ from datetime import date
 from typing import Any, Iterable
 
 from .dossier import project_dossier
-from .event_ledger import MilestoneObservation, snapshot_as_of
+from .event_ledger import AUTHORITATIVE_SOURCE_CLASSES, MilestoneObservation, actual_window, snapshot_as_of
 from .model_risk import model_risk_report
 from .physical_depth import PHYSICAL_TYPES
 
@@ -17,8 +17,9 @@ def project_decision_card(
 ) -> dict[str, Any]:
     """Condense an evidence dossier into an explicit lender diligence card.
 
-    The card never fabricates a numerical credit/risk score. When model-risk
-    publication gates are not met, it stays in EVIDENCE_ONLY mode.
+    Documentary coverage and physical completion are deliberately separate. A
+    design, contract, order or forecast can explain a delivery layer without
+    proving that layer has been completed.
     """
     all_rows = list(items)
     rows = snapshot_as_of(all_rows, as_of) if as_of else all_rows
@@ -28,14 +29,23 @@ def project_decision_card(
     types = {x.milestone_type for x in project_rows if x.milestone_type in PHYSICAL_TYPES}
     authoritative_types = {
         x.milestone_type for x in project_rows
-        if x.milestone_type in PHYSICAL_TYPES and x.source_weight >= 0.90
+        if x.milestone_type in PHYSICAL_TYPES and x.source_class in AUTHORITATIVE_SOURCE_CLASSES
+    }
+    completed_types = {
+        x.milestone_type for x in project_rows
+        if x.milestone_type in PHYSICAL_TYPES and x.status == "actual" and actual_window(x) is not None
+    }
+    authoritative_completed_types = {
+        x.milestone_type for x in project_rows
+        if x.milestone_type in PHYSICAL_TYPES
+        and x.status == "actual"
+        and actual_window(x) is not None
+        and x.source_class in AUTHORITATIVE_SOURCE_CLASSES
     }
     missing = sorted(set(PHYSICAL_TYPES) - types)
+    unproven_completion = sorted(set(PHYSICAL_TYPES) - completed_types)
 
-    operations = [
-        m for m in dossier["milestones"]
-        if m["milestone_type"] == "operations"
-    ]
+    operations = [m for m in dossier["milestones"] if m["milestone_type"] == "operations"]
     operations.sort(
         key=lambda m: (
             (m["latest_forecast"] or {}).get("observed_on") or "",
@@ -52,6 +62,12 @@ def project_decision_card(
             "type": "missing_physical_evidence",
             "detail": missing,
         })
+    if unproven_completion:
+        concerns.append({
+            "severity": "HIGH" if len(unproven_completion) >= 4 else "MEDIUM",
+            "type": "physical_completion_unproven",
+            "detail": unproven_completion,
+        })
     if dossier["evidence_summary"]["source_conflicts"]:
         concerns.append({
             "severity": "MEDIUM",
@@ -66,21 +82,19 @@ def project_decision_card(
             "detail": stale,
         })
 
-    diligence: list[str] = []
     requests = {
-        "power": "Executed grid-connection agreement, energisation schedule and curtailment terms.",
-        "permitting": "Final permits, appeal status and remaining planning conditions.",
-        "transformer": "Transformer/switchgear purchase orders, OEM slots and FAT/SAT dates.",
-        "construction": "EPC schedule, critical path, earned progress and liquidated-damages terms.",
-        "cooling": "Cooling design, procurement status, commissioning and heat-reuse dependencies.",
-        "network": "Diverse carrier routes, fiber completion and meet-me-room readiness.",
+        "power": "Executed grid agreement plus energisation/acceptance evidence, live capacity and curtailment terms.",
+        "permitting": "Final effective permits, appeal status, conditions precedent and evidence they remain in force.",
+        "transformer": "Transformer/switchgear purchase orders, delivery records, FAT/SAT and energisation evidence.",
+        "construction": "EPC baseline/current schedule, earned progress, completion certificates and liquidated-damages terms.",
+        "cooling": "Cooling procurement, installation, commissioning/acceptance evidence and heat-reuse dependencies.",
+        "network": "Carrier contracts, completed diverse fiber routes, tested POEs and meet-me-room readiness.",
     }
-    for missing_type in missing:
-        diligence.append(requests[missing_type])
+    diligence = [requests[t] for t in unproven_completion]
     if not diligence:
         diligence = [
             "Refresh primary evidence for any milestone older than 180 days.",
-            "Reconcile project schedule against lender/EPC data-room dates.",
+            "Reconcile public project schedule against lender/EPC data-room dates.",
             "Verify remaining critical-path float and contingency ownership.",
         ]
 
@@ -89,7 +103,7 @@ def project_decision_card(
     today = as_of or max((x.observed_on for x in rows), default=date.today().isoformat())
 
     return {
-        "card_version": "ProofMW Decision Card v1",
+        "card_version": "ProofMW Decision Card v1.1",
         "as_of": today,
         "mode": mode,
         "project": dossier["project"],
@@ -101,6 +115,10 @@ def project_decision_card(
             "authoritative_physical_types_present": sorted(authoritative_types),
             "physical_coverage_ratio": round(len(types) / len(PHYSICAL_TYPES), 4),
             "missing_physical_types": missing,
+            "completed_physical_types": sorted(completed_types),
+            "authoritative_completed_physical_types": sorted(authoritative_completed_types),
+            "completed_physical_coverage_ratio": round(len(completed_types) / len(PHYSICAL_TYPES), 4),
+            "unproven_physical_completion_types": unproven_completion,
             "source_conflicts": dossier["evidence_summary"]["source_conflicts"],
         },
         "operations_signal": {
@@ -118,8 +136,7 @@ def project_decision_card(
             "blocked_levels": risk["blocked_levels"],
         },
         "decision_guardrail": (
-            "No automated approve/decline recommendation is issued. "
-            "This card organizes evidence and missing diligence. Quantitative confidence "
-            "levels remain blocked unless the independent publication policy passes."
+            "No automated approve/decline recommendation is issued. Documentary physical coverage is not proof of physical completion. "
+            "This card organizes evidence and missing diligence; quantitative confidence remains blocked unless the independent publication policy passes."
         ),
     }
